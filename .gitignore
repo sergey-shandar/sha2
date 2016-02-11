@@ -27,6 +27,7 @@
 *.out
 *.app
 
-
+# Visual Studio
 Debug/
 *.opendb
+*.ipch
