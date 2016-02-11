@@ -1,2 +1,1 @@
-# sha2
-SHA2
+C++ implementation of SHA 2.
