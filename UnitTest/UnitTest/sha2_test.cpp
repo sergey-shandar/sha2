@@ -23,7 +23,8 @@ template<class T, size_t S>
 namespace Microsoft {
     namespace VisualStudio {
         namespace CppUnitTestFramework {
-            template<class T, size_t S> static std::wstring ToString(::std::array<T, S> const &t)
+            template<class T, size_t S> 
+            static std::wstring ToString(::std::array<T, S> const &t)
             {
                 RETURN_WIDE_STRING(t);
             }
