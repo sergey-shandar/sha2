@@ -166,5 +166,17 @@ namespace UnitTest
                     0x98d0c01ecef0967a,
                 });
         }
+
+        TEST_METHOD(Sha512t224)
+        {
+            Assert::AreEqual(
+                sha2::sha512t224(from_string("")),
+                {
+                    0x6ed0dd02806fa89e,
+                    0x25de060c19d3ac86,
+                    0xcabb87d6a0ddd05c,
+                    0x333b84f400000000,
+                });
+        }
 	};
 }

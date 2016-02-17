@@ -390,4 +390,32 @@ namespace sha2
                 }
             };
     }
+
+    template<class Bytes>
+    sha512t256_t sha512t224(Bytes const bytes)
+    {
+        auto const result = process<uint64_t>(
+            {
+                {
+                    0x8C3D37C819544DA2,
+                    0x73E1996689DCD4D6,
+                    0x1DFAB7AE32FF9C82,
+                    0x679DD514582F9FCF,
+                    0x0F6D2B697BD44DA8,
+                    0x77E36F7304C48942,
+                    0x3F9D85A86A1D36C8,
+                    0x1112E6AD91D692A1,
+                }
+            },
+            bytes);
+        return
+            {
+                {
+                    result[0],
+                    result[1],
+                    result[2],
+                    result[3] & 0xFFFFFFFF00000000,
+                }
+            };
+    }
 }
