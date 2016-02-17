@@ -6,8 +6,8 @@
 
 namespace sha2
 {
-    template<int n, class T>
-    T right_rotate(T v)
+    template<class T>
+    constexpr T right_rotate(T v, int n)
     {
         return (v >> n) | (v << (sizeof(T) * CHAR_BIT - n));
     }
@@ -126,7 +126,7 @@ namespace sha2
 
         void process()
         {
-            // Extend the first 16 words into the remaining 48 words w[16..63] 
+            // Extend the first 16 words into the remaining 48/66 words w[16..63/79] 
             // of the message schedule array:
             for (auto i = 16; i < p_t::size; ++i)
             {
@@ -134,12 +134,12 @@ namespace sha2
                 auto const w2 = w[i - 2];
 
                 auto const s0 =
-                    right_rotate<p_t::s00>(w15) ^
-                    right_rotate<p_t::s01>(w15) ^
+                    right_rotate(w15, p_t::s00) ^
+                    right_rotate(w15, p_t::s01) ^
                     (w15 >> p_t::s02);
                 auto const s1 =
-                    right_rotate<p_t::s10>(w2) ^
-                    right_rotate<p_t::s11>(w2) ^
+                    right_rotate(w2, p_t::s10) ^
+                    right_rotate(w2, p_t::s11) ^
                     (w2 >> p_t::s12);
 
                 w[i] = w[i - 16] + s0 + w[i - 7] + s1;
@@ -159,16 +159,16 @@ namespace sha2
             for (auto i = 0; i < p_t::size; ++i)
             {
                 auto const s1 =
-                    right_rotate<p_t::e0>(e) ^
-                    right_rotate<p_t::e1>(e) ^
-                    right_rotate<p_t::e2>(e);
+                    right_rotate(e, p_t::e0) ^
+                    right_rotate(e, p_t::e1) ^
+                    right_rotate(e, p_t::e2);
                 auto const ch = (e & f) ^ ((~e) & g);
                 auto const temp1 = h + s1 + ch + k[i] + w[i];
 
                 auto const s0 =
-                    right_rotate<p_t::a0>(a) ^
-                    right_rotate<p_t::a1>(a) ^
-                    right_rotate<p_t::a2>(a);
+                    right_rotate(a, p_t::a0) ^
+                    right_rotate(a, p_t::a1) ^
+                    right_rotate(a, p_t::a2);
                 auto const maj = (a & b) ^ (a & c) ^ (b & c);
                 auto const temp2 = s0 + maj;
 
@@ -223,7 +223,7 @@ namespace sha2
         {
             auto const size_lo = static_cast<T>(size);
             auto const value_offset = size_lo % uint_size;
-            value |= static_cast<T>(0x80) << ((uint_size - 8) - value_offset);
+            value |= static_cast<T>(1) << ((uint_size - 1) - value_offset);
             auto i = (size_lo / uint_size) % 16;
             state.w[i] = value;
             ++i;

@@ -29,6 +29,7 @@
 
 # Visual Studio
 Debug/
+Release/
 *.opendb
 *.ipch
 *.sdf
