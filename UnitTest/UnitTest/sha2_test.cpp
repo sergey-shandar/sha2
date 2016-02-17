@@ -140,5 +140,19 @@ namespace UnitTest
                     0xa538327af927da3e,
                 });
         }
+
+        TEST_METHOD(Sha384)
+        {
+            Assert::AreEqual(
+                sha2::sha384(from_string("")),
+                {
+                    0x38b060a751ac9638,
+                    0x4cd9327eb1b1e36a,
+                    0x21fdb71114be0743,
+                    0x4c0cc7bf63f6e1da,
+                    0x274edebfe76f65fb,
+                    0xd51ad2f14898b95b,
+                });
+        }
 	};
 }

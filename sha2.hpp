@@ -313,9 +313,6 @@ namespace sha2
     template<class Bytes>
     sha512_t sha512(Bytes const &bytes)
     {
-        // Initialize hash values :
-        // (first 32 bits of the fractional parts of the square roots of the
-        // first 8 primes 2..19) :
         return process<uint64_t>(
             {
                 {
@@ -330,5 +327,37 @@ namespace sha2
                 }
             },
             bytes);
+    }
+
+    typedef ::std::array<uint64_t, 6> sha384_t;
+
+    template<class Bytes>
+    sha384_t sha384(Bytes const &bytes)
+    {
+        auto const result = process<uint64_t>(
+            {
+                {
+                    0xcbbb9d5dc1059ed8,
+                    0x629a292a367cd507,
+                    0x9159015a3070dd17,
+                    0x152fecd8f70e5939,
+                    0x67332667ffc00b31,
+                    0x8eb44a8768581511,
+                    0xdb0c2e0d64f98fa7,
+                    0x47b5481dbefa4fa4,
+                }
+            },
+            bytes);
+        return 
+            {
+                {
+                    result[0],
+                    result[1],
+                    result[2],
+                    result[3],
+                    result[4],
+                    result[5],
+                }
+            };
     }
 }
