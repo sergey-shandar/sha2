@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 namespace sha2
 {
     template<int n, class T>
@@ -38,6 +40,8 @@ namespace sha2
         typedef uint32_t const k_t[size];
 
         static k_t k;
+
+        typedef uint64_t uint_size_t;
     };
 
     // Initialize array of round constants :
@@ -79,6 +83,8 @@ namespace sha2
         typedef uint64_t const k_t[size];
 
         static k_t k;
+
+        typedef ::boost::multiprecision::uint128_t uint_size_t;
     };
 
     template<class Dummy>
@@ -188,20 +194,22 @@ namespace sha2
         }
     };
 
-    template<class Bytes>
-    ::std::array<uint32_t, 8> process(
-        ::std::array<uint32_t, 8> const &initial, Bytes const &bytes)
+    template<class T, class Bytes>
+    ::std::array<T, 8> process(
+        ::std::array<T, 8> const &initial, Bytes const &bytes)
     {
-        uint64_t size = 0;
-        state_t<uint32_t> state(initial);
-        uint32_t value = 0;
+        typename parameters_t<T>::uint_size_t size = 0;
+        state_t<T> state(initial);
+        T value = 0;
+        static int const uint_size = sizeof(T) * CHAR_BIT;
         for each (auto const v in bytes)
         {
-            auto const value_offset = size % 32;
-            value |= v << (24 - value_offset);
-            if (value_offset == 24)
+            auto const size_lo = static_cast<T>(size);
+            auto const value_offset = size_lo % uint_size;
+            value |= v << ((uint_size - 8) - value_offset);
+            if (value_offset == (uint_size - 8))
             {
-                auto const i = (size / 32) % 16;
+                auto const i = (size_lo / uint_size) % 16;
                 state.w[i] = value;
                 value = 0;
                 if (i == 15)
@@ -213,9 +221,10 @@ namespace sha2
         }
         // 1 bit at the end.
         {
-            auto const value_offset = size % 32;
-            value |= 0x80 << (24 - value_offset);
-            auto i = (size / 32) % 16;
+            auto const size_lo = static_cast<T>(size);
+            auto const value_offset = size_lo % uint_size;
+            value |= static_cast<T>(0x80) << ((uint_size - 8) - value_offset);
+            auto i = (size_lo / uint_size) % 16;
             state.w[i] = value;
             ++i;
             if (i >= 14)
@@ -231,8 +240,8 @@ namespace sha2
             {
                 state.w[i] = 0;
             }
-            state.w[14] = static_cast<uint32_t>(size >> 32);
-            state.w[15] = static_cast<uint32_t>(size);
+            state.w[14] = static_cast<T>(size >> uint_size);
+            state.w[15] = size_lo;
             state.process();
         }
         return state.result;
@@ -247,7 +256,7 @@ namespace sha2
         // Initialize hash values :
         // (first 32 bits of the fractional parts of the square roots of the
         // first 8 primes 2..19) :
-        return process(
+        return process<uint32_t>(
             {
                 {
                     0x6a09e667,
@@ -271,7 +280,7 @@ namespace sha2
         // SHA - 224 initial hash values(in big endian) :
         // (The second 32 bits of the fractional parts of the square roots of 
         // the 9th through 16th primes 23..53)
-        auto const result = process(
+        auto const result = process<uint32_t>(
             {
                 {
                     0xc1059ed8,
@@ -297,5 +306,29 @@ namespace sha2
                 result[6],
             }
         };
+    }
+
+    typedef ::std::array<uint64_t, 8> sha512_t;
+
+    template<class Bytes>
+    sha512_t sha512(Bytes const &bytes)
+    {
+        // Initialize hash values :
+        // (first 32 bits of the fractional parts of the square roots of the
+        // first 8 primes 2..19) :
+        return process<uint64_t>(
+            {
+                {
+                    0x6a09e667f3bcc908,
+                    0xbb67ae8584caa73b,
+                    0x3c6ef372fe94f82b,
+                    0xa54ff53a5f1d36f1,
+                    0x510e527fade682d1,
+                    0x9b05688c2b3e6c1f,
+                    0x1f83d9abfb41bd6b,
+                    0x5be0cd19137e2179,
+                }
+            },
+            bytes);
     }
 }

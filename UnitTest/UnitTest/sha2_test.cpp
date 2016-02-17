@@ -124,5 +124,21 @@ namespace UnitTest
                     0x8635fb6c
                 });
         }
+
+        TEST_METHOD(Sha512)
+        {
+            Assert::AreEqual(
+                sha2::sha512(from_string("")),
+                {
+                    0xcf83e1357eefb8bd,
+                    0xf1542850d66d8007,
+                    0xd620e4050b5715dc,
+                    0x83f4a921d36ce9ce,
+                    0x47d0d13c5d85f2b0,
+                    0xff8318d2877eec2f,
+                    0x63b931bd47417a81,
+                    0xa538327af927da3e,
+                });
+        }
 	};
 }
