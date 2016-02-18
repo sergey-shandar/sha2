@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>sha2</id>
+    <description>SHA-2</description>
+    <version>0.0.0</version>
+    <authors>Sergey Shandar</authors>
+  </metadata>
+  <files>
+    <file src="sha2.hpp" target="lib/native/include"/>
+  </files>
+</package>

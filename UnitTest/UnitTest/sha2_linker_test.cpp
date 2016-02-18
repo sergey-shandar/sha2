@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
-#include "../../sha2.hpp"
+#include "../../src/sha2.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
