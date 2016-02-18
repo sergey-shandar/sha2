@@ -5,3 +5,5 @@ C++ implementation of SHA-2:
 - SHA-512
 - SHA-512/224
 - SHA-512/256
+
+[NuGet](https://www.nuget.org/packages/sha2/)
