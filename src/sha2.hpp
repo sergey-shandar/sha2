@@ -202,7 +202,7 @@ namespace sha2
         state_t<T> state(initial);
         T value = 0;
         static int const uint_size = sizeof(T) * CHAR_BIT;
-        for each (auto const v in bytes)
+        for each (uint8_t const v in bytes)
         {
             auto const size_lo = static_cast<T>(size);
             auto const value_offset = size_lo % uint_size;

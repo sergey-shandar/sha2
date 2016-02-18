@@ -21,7 +21,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sha2.hpp">
+    <ClInclude Include="helper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="sha2_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sha2_linker_test.cpp">
+    <ClCompile Include="sha2_additional_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
