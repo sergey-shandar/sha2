@@ -1,5 +1,7 @@
 #include <sha2.hpp>
 
+#include <boost/range/iterator_range.hpp>
+
 template<size_t S>
 ::boost::iterator_range<char const *> from_string(char const (&x)[S])
 {

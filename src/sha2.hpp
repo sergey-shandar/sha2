@@ -2,8 +2,6 @@
 
 #include <array>
 
-#include <boost/multiprecision/cpp_int.hpp>
-
 namespace sha2
 {
     template<class T>
@@ -40,8 +38,6 @@ namespace sha2
         typedef uint32_t const k_t[size];
 
         static k_t k;
-
-        typedef uint64_t uint_size_t;
     };
 
     // Initialize array of round constants :
@@ -83,8 +79,6 @@ namespace sha2
         typedef uint64_t const k_t[size];
 
         static k_t k;
-
-        typedef ::boost::multiprecision::uint128_t uint_size_t;
     };
 
     template<class Dummy>
@@ -198,13 +192,13 @@ namespace sha2
     ::std::array<T, 8> process(
         ::std::array<T, 8> const &initial, Bytes const &bytes)
     {
-        typename parameters_t<T>::uint_size_t size = 0;
+        T size_lo = 0;
+        T size_hi = 0;
         state_t<T> state(initial);
         T value = 0;
         static int const uint_size = sizeof(T) * CHAR_BIT;
         for each (uint8_t const v in bytes)
         {
-            auto const size_lo = static_cast<T>(size);
             auto const value_offset = size_lo % uint_size;
             value |= v << ((uint_size - 8) - value_offset);
             if (value_offset == (uint_size - 8))
@@ -215,13 +209,16 @@ namespace sha2
                 if (i == 15)
                 {
                     state.process();
+                    if (size_lo == std::numeric_limits<T>::max() - 7)
+                    {
+                        ++size_hi;
+                    }
                 }
             }
-            size += 8;
+            size_lo += 8;
         }
         // 1 bit at the end.
         {
-            auto const size_lo = static_cast<T>(size);
             auto const value_offset = size_lo % uint_size;
             value |= static_cast<T>(1) << ((uint_size - 1) - value_offset);
             auto i = (size_lo / uint_size) % 16;
@@ -240,7 +237,7 @@ namespace sha2
             {
                 state.w[i] = 0;
             }
-            state.w[14] = static_cast<T>(size >> uint_size);
+            state.w[14] = size_hi;
             state.w[15] = size_lo;
             state.process();
         }

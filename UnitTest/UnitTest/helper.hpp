@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/range.hpp>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 template<class T, size_t S>
