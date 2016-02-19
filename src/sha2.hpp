@@ -200,7 +200,7 @@ namespace sha2
         for (uint8_t const v: bytes)
         {
             auto const value_offset = size_lo % uint_size;
-            value |= v << ((uint_size - 8) - value_offset);
+            value |= static_cast<T>(v) << ((uint_size - 8) - value_offset);
             if (value_offset == (uint_size - 8))
             {
                 auto const i = (size_lo / uint_size) % 16;
