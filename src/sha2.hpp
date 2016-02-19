@@ -157,7 +157,7 @@ namespace sha2
                     right_rotate(e, p_t::e1) ^
                     right_rotate(e, p_t::e2);
                 auto const ch = (e & f) ^ ((~e) & g);
-                auto const temp1 = h + s1 + ch + this->k[i] + w[i];
+                auto const temp1 = h + s1 + ch + p_t::k[i] + w[i];
 
                 auto const s0 =
                     right_rotate(a, p_t::a0) ^
@@ -224,7 +224,7 @@ namespace sha2
             auto i = (size_lo / uint_size) % 16;
             state.w[i] = value;
             ++i;
-            if (i >= 14)
+            if (i > 14)
             {
                 for (; i < 16; ++i)
                 {

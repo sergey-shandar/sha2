@@ -11,7 +11,7 @@ int nCLangLibExample=0;
 // This is an example of an exported function.
 int fnCLangLibExample(void)
 {
-    ::std::uint8_t const x[] = { 0x48 };
+    uint8_t const x[] = { 0x48 };
     auto const r = sha2::sha512(x);
     return r[0];
 }

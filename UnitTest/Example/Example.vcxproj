@@ -150,13 +150,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\boost.1.60.0.0\build\native\boost.targets" Condition="Exists('..\packages\boost.1.60.0.0\build\native\boost.targets')" />
-    <Import Project="..\packages\sha2.0.0.6\build\native\sha2.targets" Condition="Exists('..\packages\sha2.0.0.6\build\native\sha2.targets')" />
+    <Import Project="..\packages\sha2.0.0.7\build\native\sha2.targets" Condition="Exists('..\packages\sha2.0.0.7\build\native\sha2.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\boost.1.60.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.60.0.0\build\native\boost.targets'))" />
-    <Error Condition="!Exists('..\packages\sha2.0.0.6\build\native\sha2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sha2.0.0.6\build\native\sha2.targets'))" />
+    <Error Condition="!Exists('..\packages\sha2.0.0.7\build\native\sha2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sha2.0.0.7\build\native\sha2.targets'))" />
   </Target>
 </Project>
