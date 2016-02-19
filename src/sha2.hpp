@@ -157,7 +157,7 @@ namespace sha2
                     right_rotate(e, p_t::e1) ^
                     right_rotate(e, p_t::e2);
                 auto const ch = (e & f) ^ ((~e) & g);
-                auto const temp1 = h + s1 + ch + k[i] + w[i];
+                auto const temp1 = h + s1 + ch + this->k[i] + w[i];
 
                 auto const s0 =
                     right_rotate(a, p_t::a0) ^
@@ -197,7 +197,7 @@ namespace sha2
         state_t<T> state(initial);
         T value = 0;
         static int const uint_size = sizeof(T) * CHAR_BIT;
-        for each (uint8_t const v in bytes)
+        for (uint8_t const v: bytes)
         {
             auto const value_offset = size_lo % uint_size;
             value |= v << ((uint_size - 8) - value_offset);
