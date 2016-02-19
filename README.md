@@ -6,10 +6,15 @@ C++ implementation of SHA-2:
 - SHA-512/224
 - SHA-512/256
 
-# Download
+## Supported Compilers
+
+- Visual C++ 14.0 (Visual Studio 2015)
+- CLang 3.7
+
+## Download
 
 - [NuGet](https://www.nuget.org/packages/sha2/)
 
-# Example
+## Example
 
 - [UnitTest/Example/main.cpp](UnitTest/Example/main.cpp)
