@@ -188,27 +188,103 @@ namespace UnitTest
                     0x1bb8e256da4a0d1e, 0x87453528254f223b, 0x4cb7e49c4420dbfa,
                     0x766bba4adba44eec, 0xa392ff6a9f565bc3, 0x47158cc970ce44ec
                 });
+            Assert::AreEqual(
+                sha2::sha384(n_range_t<0, 1000000>()),
+                {
+                    0x8a1979f9049b3fff, 0x15ea3a43a4cf84c6, 0x34fd14acad1c333f,
+                    0xecb72c588b68868b, 0x66a994386dc0cd16, 0x87b9ee2e34983b81
+                });
+            Assert::AreEqual(
+                sha2::sha384(n_range_t<0x5a, 0x20000000>()),
+                {
+                    0x18aded227cc6b562, 0xcc7fb259e8f40454, 0x9e52914531aa1c5d,
+                    0x85167897c779cc4b, 0x25d0425fd1590e40, 0xbd763ec3f4311c1a
+                });
+            Assert::AreEqual(
+                sha2::sha384(n_range_t<0, 0x41000000>()),
+                {
+                    0x83ab05ca483abe3f, 0xaa597ad524d31291, 0xae827c5be2b3efcb,
+                    0x6391bfed31ccd937, 0xb6135e0378c6c7f5, 0x98857a7c516f207a
+                });
+            Assert::AreEqual(
+                sha2::sha384(n_range_t<0x42, 0x6000003e>()),
+                {
+                    0xcf852304f8d80209, 0x351b37ce69ca7dcf, 0x34972b4edb781702,
+                    0x8ec55ab67ad3bc96, 0xeecb8241734258a8, 0x5d2afce65d4571e2
+                });
+        }
+
+        TEST_METHOD(A512)
+        {
+            Assert::AreEqual(
+                sha2::sha512(from_string("")),
+                {
+                    0xcf83e1357eefb8bd, 0xf1542850d66d8007, 0xd620e4050b5715dc, 0x83f4a921d36ce9ce,
+                    0x47d0d13c5d85f2b0, 0xff8318d2877eec2f, 0x63b931bd47417a81, 0xa538327af927da3e
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0, 111>()),
+                {
+                    0x77ddd3a542e530fd, 0x047b8977c657ba6c, 0xe72f1492e360b2b2, 0x212cd264e75ec038,
+                    0x82e4ff0525517ab4, 0x207d14c70c2259ba, 0x88d4d335ee0e7e20, 0x543d22102ab1788c
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0, 112>()),
+                {
+                    0x2be2e788c8a8adea, 0xa9c89a7f78904cac, 0xea6e39297d75e057, 0x3a73c756234534d6,
+                    0x627ab4156b48a665, 0x7b29ab8beb733340, 0x40ad39ead81446bb, 0x09c70704ec707952
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0, 113>()),
+                {
+                    0x0e67910bcf0f9ccd, 0xe5464c63b9c850a1, 0x2a759227d16b040d, 0x98986d54253f9f34,
+                    0x322318e56b8feb86, 0xc5fb2270ed87f312, 0x52f7f68493ee7597, 0x43909bd75e4bb544
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0, 122>()),
+                {
+                    0x4f3f095d015be4a7, 0xa7cc0b8c04da4aa0, 0x9e74351e3a97651f, 0x744c23716ebd9b3e,
+                    0x822e5077a01baa5c, 0xc0ed45b9249e88ab, 0x343d4333539df21e, 0xd229da6f4a514e0f
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0, 1000>()),
+                {
+                    0xca3dff61bb23477a, 0xa6087b27508264a6, 0xf9126ee3a004f53c, 0xb8db942ed345f2f2,
+                    0xd229b4b59c859220, 0xa1cf1913f34248e3, 0x803bab650e849a3d, 0x9a709edc09ae4a76
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0x41, 1000>()),
+                {
+                    0x329c52ac62d1fe73, 0x1151f2b895a00475, 0x445ef74f50b979c6, 0xf7bb7cae349328c1,
+                    0xd4cb4f7261a0ab43, 0xf936a24b000651d4, 0xa824fcdd577f211a, 0xef8f806b16afe8af
+                });
+            Assert::AreEqual(
+                sha2::sha512(n_range_t<0x55, 1000>()),
+                {
+                    0x59f5e54fe299c6a8, 0x764c6b199e44924a, 0x37f59e2b56c3ebad, 0x939b7289210dc8e4,
+                    0xc21b9720165b0f4d, 0x4374c90f1bf4fb4a, 0x5ace17a116179801, 0x5052893a48c3d161
+                });
             /*
-                #8) 1005 bytes of 0x55 ‘U’
-                1bb8e256da4a0d1e 87453528254f223b 4cb7e49c4420dbfa 766bba4adba44eec
-                a392ff6a9f565bc3 47158cc970ce44ec
+            #8) 1005 bytes of 0x55 ‘U’
+            59f5e54fe299c6a8 764c6b199e44924a 37f59e2b56c3ebad 939b7289210dc8e4
+            c21b9720165b0f4d 4374c90f1bf4fb4a 5ace17a116179801 5052893a48c3d161
 
-                #9) 1000000 bytes of zeros
-                8a1979f9049b3fff 15ea3a43a4cf84c6 34fd14acad1c333f ecb72c588b68868b
-                66a994386dc0cd16 87b9ee2e34983b81
+            #9) 1000000 bytes of zeros
+            ce044bc9fd43269d 5bbc946cbebc3bb7 11341115cc4abdf2 edbc3ff2c57ad4b1
+            5deb699bda257fea 5aef9c6e55fcf4cf 9dc25a8c3ce25f2e fe90908379bff7ed
 
-                #10) 0x20000000 (536870912) bytes of 0x5a ‘Z’
-                18aded227cc6b562 cc7fb259e8f40454 9e52914531aa1c5d 85167897c779cc4b
-                25d0425fd1590e40 bd763ec3f4311c1a
+            #10) 0x20000000 (536870912) bytes of 0x5a ‘Z’
+            da172279f3ebbda9 5f6b6e1e5f0ebec6 82c25d3d93561a16 24c2fa9009d64c7e
+            9923f3b46bcaf11d 39a531f43297992b a4155c7e827bd0f1 e194ae7ed6de4cac
 
-                #11) 0x41000000 (1090519040) bytes of zeros
-                83ab05ca483abe3f aa597ad524d31291 ae827c5be2b3efcb 6391bfed31ccd937
-                b6135e0378c6c7f5 98857a7c516f207a
+            #11) 0x41000000 (1090519040) bytes of zeros
+            14b1be901cb43549 b4d831e61e5f9df1 c791c85b50e85f9d 6bc64135804ad43c
+            e8402750edbe4e5c 0fc170b99cf78b9f 4ecb9c7e02a15791 1d1bd1832d76784f
 
-                #12) 0x6000003e (1610612798) bytes of 0x42 ‘B’
-                cf852304f8d80209 351b37ce69ca7dcf 34972b4edb781702 8ec55ab67ad3bc96
-                eecb8241734258a8 5d2afce65d4571e2
-                */
+            #12) 0x6000003e (1610612798) bytes of 0x42 ‘B’
+            fd05e13eb771f051 90bd97d62647157e a8f1f6949a52bb6d aaedbad5f578ec59
+            b1b8d6c4a7ecb2fe ca6892b4dc138771 670a0f3bd577eea3 26aed40ab7dd58b1
+            */
         }
     };
 }
