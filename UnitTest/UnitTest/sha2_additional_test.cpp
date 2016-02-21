@@ -14,6 +14,38 @@ namespace UnitTest
     {
     public:
 
+        TEST_METHOD(A224Size)
+        {
+            uint32_t const x4[] = { 0xe5e09924 };
+            Assert::AreEqual(
+                sha2::sha224(x4),
+                {
+                    0xfd19e746, 0x90d29146, 0x7ce59f07, 0x7df31163, 0x8f1c3a46, 0xe510d0e4, 0x9a67062d
+                });
+            uint16_t const x2[] = { 0xe5e0, 0x9924 };
+            Assert::AreEqual(
+                sha2::sha224(x2),
+                {
+                    0xfd19e746, 0x90d29146, 0x7ce59f07, 0x7df31163, 0x8f1c3a46, 0xe510d0e4, 0x9a67062d
+                });
+        }
+
+        TEST_METHOD(A256Size)
+        {
+            uint32_t const x4[] = { 0xc98c8e55 };
+            Assert::AreEqual(
+                sha2::sha256(x4),
+                {
+                    0x7abc22c0, 0xae5af26c, 0xe93dbb94, 0x433a0e0b, 0x2e119d01, 0x4f8e7f65, 0xbd56c61c, 0xcccd9504
+                });
+            uint16_t const x2[] = { 0xc98c, 0x8e55 };
+            Assert::AreEqual(
+                sha2::sha256(x4),
+                {
+                    0x7abc22c0, 0xae5af26c, 0xe93dbb94, 0x433a0e0b, 0x2e119d01, 0x4f8e7f65, 0xbd56c61c, 0xcccd9504
+                });
+        }
+
         TEST_METHOD(A224)
         {
             Assert::AreEqual(

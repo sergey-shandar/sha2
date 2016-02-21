@@ -192,16 +192,26 @@ namespace sha2
     ::std::array<T, 8> process(
         ::std::array<T, 8> const &initial, Bytes const &bytes)
     {
+        static int const uint_size = sizeof(T) * CHAR_BIT;
+        static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
+        
+        static_assert(
+            uint_size >= input_size,
+            "an input unit should not be bigger than an internal unit");
+        static_assert(
+            uint_size % input_size == 0, 
+            "");
+
         T size_lo = 0;
         T size_hi = 0;
         state_t<T> state(initial);
         T value = 0;
-        static int const uint_size = sizeof(T) * CHAR_BIT;
-        for (uint8_t const v: bytes)
+        for (auto const v: bytes)
         {
             auto const value_offset = size_lo % uint_size;
-            value |= static_cast<T>(v) << ((uint_size - 8) - value_offset);
-            if (value_offset == (uint_size - 8))
+            value |= 
+                static_cast<T>(v) << ((uint_size - input_size) - value_offset);
+            if (value_offset == (uint_size - input_size))
             {
                 auto const i = (size_lo / uint_size) % 16;
                 state.w[i] = value;
@@ -209,13 +219,13 @@ namespace sha2
                 if (i == 15)
                 {
                     state.process();
-                    if (size_lo == std::numeric_limits<T>::max() - 7)
+                    if (size_lo == std::numeric_limits<T>::max() - (input_size - 1))
                     {
                         ++size_hi;
                     }
                 }
             }
-            size_lo += 8;
+            size_lo += input_size;
         }
         // 1 bit at the end.
         {
