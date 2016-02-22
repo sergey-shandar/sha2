@@ -188,12 +188,22 @@ namespace sha2
         }
     };
 
+    template<class T>
+    class bits
+    {
+    public:
+        T value;
+        size_t size;
+    };
+
+    // bytes is a function wich returns optional(bitloads, size)
     template<class T, class Bytes>
     ::std::array<T, 8> process(
-        ::std::array<T, 8> const &initial, Bytes const &bytes)
+        ::std::array<T, 8> const &initial,
+        Bytes const &bytes)
     {
-        static int const uint_size = sizeof(T) * CHAR_BIT;
-        static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
+        static size_t const uint_size = sizeof(T) * CHAR_BIT;
+        static size_t const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
         
         static_assert(
             uint_size >= input_size,
