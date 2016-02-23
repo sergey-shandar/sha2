@@ -189,18 +189,46 @@ namespace sha2
     };
 
     template<class T>
-    class bits
+    class bits_t
     {
     public:
         T value;
         size_t size;
     };
 
-    // bytes is a function wich returns optional(bitloads, size)
-    template<class T, class Bytes>
-    ::std::array<T, 8> process(
+    template<class I>
+    class bit_sequence_t
+    {
+    private:
+        I _begin;
+        I _end;
+    public:
+        typedef typename std::iterator_traits<I>::value_type value_type;
+        typedef bits_t<value_type> result_t;
+        bit_sequence_t(I begin, I end) : _begin(begin), _end(end) { }
+        result_t operator()()
+        {
+            if (_begin == _end)
+            {
+                return { 0, 0 };
+            }
+            auto const result = { *_begin, sizeof(value_type) * CHAR_BIT };
+            ++_begin;
+            return result;
+        }
+    };
+
+    template<class C>
+    auto bit_sequence(C &c)
+    {
+        typedef typename decltype(::std::begin(c)) iterator_t;
+        return bit_sequence_t<iterator_t>(::std::begin(c), ::std::end(c));
+    }
+
+    template<class T, class B>
+    ::std::array<T, 8> process_bit_sequence(
         ::std::array<T, 8> const &initial,
-        Bytes const &bytes)
+        B const &bytes)
     {
         static size_t const uint_size = sizeof(T) * CHAR_BIT;
         static size_t const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
@@ -262,6 +290,15 @@ namespace sha2
             state.process();
         }
         return state.result;
+    }
+
+    // bytes is a function wich returns optional(bitloads, size)
+    template<class T, class Bytes>
+    ::std::array<T, 8> process(
+        ::std::array<T, 8> const &initial,
+        Bytes const &bytes)
+    {
+        return process_bit_sequence(initial, bytes);
     }
 
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
