@@ -230,8 +230,8 @@ namespace sha2
         ::std::array<T, 8> const &initial,
         B const &bytes)
     {
-        static size_t const uint_size = sizeof(T) * CHAR_BIT;
-        static size_t const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
+        static int const uint_size = sizeof(T) * CHAR_BIT;
+        static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
         
         static_assert(
             uint_size >= input_size,
