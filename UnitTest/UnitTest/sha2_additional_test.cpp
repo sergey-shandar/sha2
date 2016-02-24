@@ -100,18 +100,26 @@ namespace UnitTest
                 });
         }
 
-        TEST_METHOD(A256)
+        TEST_METHOD(A256FromString1)
         {
             Assert::AreEqual(
                 sha2::sha256(from_string("\xbd")),
                 {
                     0x68325720, 0xaabd7c82, 0xf30f554b, 0x313d0570, 0xc95accbb, 0x7dc4b5aa, 0xe11204c0, 0x8ffe732b
                 });
+        }
+
+        TEST_METHOD(A256FromString4)
+        {
             Assert::AreEqual(
                 sha2::sha256(from_string("\xc9\x8c\x8e\x55")),
                 {
                     0x7abc22c0, 0xae5af26c, 0xe93dbb94, 0x433a0e0b, 0x2e119d01, 0x4f8e7f65, 0xbd56c61c, 0xcccd9504
                 });
+        }
+
+        TEST_METHOD(A256Small)
+        {
             Assert::AreEqual(
                 sha2::sha256(n_range_t<0, 55>()),
                 {
@@ -147,6 +155,10 @@ namespace UnitTest
                 {
                     0xf4d62dde, 0xc0f3dd90, 0xea1380fa, 0x16a5ff8d, 0xc4c54b21, 0x740650f2, 0x4afc4120, 0x903552b0
                 });
+        }
+
+        TEST_METHOD(A256Big)
+        {
             Assert::AreEqual(
                 sha2::sha256(n_range_t<0, 1000000>()),
                 {

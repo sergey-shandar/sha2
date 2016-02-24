@@ -225,12 +225,25 @@ namespace sha2
         return bit_sequence_t<iterator_t>(::std::begin(c), ::std::end(c));
     }
 
+    template<class T>
+    auto make_unsigned(T v)
+    {
+        return static_cast<::std::make_unsigned_t<T>>(v);
+    }
+
     template<class T, class B>
     ::std::array<T, 8> process_bit_sequence(
         ::std::array<T, 8> const &initial,
         B const &bytes)
     {
         static int const uint_size = sizeof(T) * CHAR_BIT;
+
+        T size_lo = 0;
+        T size_hi = 0;
+        state_t<T> state(initial);
+        T value = 0;
+
+        {
         static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
         
         static_assert(
@@ -240,15 +253,11 @@ namespace sha2
             uint_size % input_size == 0, 
             "");
 
-        T size_lo = 0;
-        T size_hi = 0;
-        state_t<T> state(initial);
-        T value = 0;
-        for (auto const v: bytes)
+            for (auto const v : bytes)
         {
             auto const value_offset = size_lo % uint_size;
             value |= 
-                static_cast<T>(v) << ((uint_size - input_size) - value_offset);
+                    static_cast<T>(make_unsigned(v)) << ((uint_size - input_size) - value_offset);
             if (value_offset == (uint_size - input_size))
             {
                 auto const i = (size_lo / uint_size) % 16;
@@ -265,6 +274,8 @@ namespace sha2
             }
             size_lo += input_size;
         }
+        }
+
         // 1 bit at the end.
         {
             auto const value_offset = size_lo % uint_size;
