@@ -188,45 +188,57 @@ namespace sha2
         }
     };
 
+    template<class T>
+    auto make_unsigned(T v)
+    {
+        return static_cast<::std::make_unsigned_t<T>>(v);
+    }
+
     template<class T, class Bytes>
     ::std::array<T, 8> process(
         ::std::array<T, 8> const &initial, Bytes const &bytes)
     {
-        static int const uint_size = sizeof(T) * CHAR_BIT;
-        static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
-        
-        static_assert(
-            uint_size >= input_size,
-            "an input unit should not be bigger than an internal unit");
-        static_assert(
-            uint_size % input_size == 0, 
-            "");
+        static int const uint_size = sizeof(T) * CHAR_BIT;       
 
         T size_lo = 0;
         T size_hi = 0;
         state_t<T> state(initial);
         T value = 0;
-        for (auto const v: bytes)
+
         {
-            auto const value_offset = size_lo % uint_size;
-            value |= 
-                static_cast<T>(v) << ((uint_size - input_size) - value_offset);
-            if (value_offset == (uint_size - input_size))
+            typedef typename decltype(*::std::begin(bytes)) v_t;
+            static int const input_size = sizeof(v_t) * CHAR_BIT;
+
+            static_assert(
+                uint_size >= input_size,
+                "an input unit should not be bigger than an internal unit");
+            static_assert(
+                uint_size % input_size == 0,
+                "");
+
+            for (auto const v : bytes)
             {
-                auto const i = (size_lo / uint_size) % 16;
-                state.w[i] = value;
-                value = 0;
-                if (i == 15)
+                auto const value_offset = size_lo % uint_size;
+                value |=
+                    static_cast<T>(make_unsigned(v)) << ((uint_size - input_size) - value_offset);
+                if (value_offset == (uint_size - input_size))
                 {
-                    state.process();
-                    if (size_lo == std::numeric_limits<T>::max() - (input_size - 1))
+                    auto const i = (size_lo / uint_size) % 16;
+                    state.w[i] = value;
+                    value = 0;
+                    if (i == 15)
                     {
-                        ++size_hi;
+                        state.process();
+                        if (size_lo == std::numeric_limits<T>::max() - (input_size - 1))
+                        {
+                            ++size_hi;
+                        }
                     }
                 }
+                size_lo += input_size;
             }
-            size_lo += input_size;
         }
+
         // 1 bit at the end.
         {
             auto const value_offset = size_lo % uint_size;
