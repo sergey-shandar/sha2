@@ -3,7 +3,7 @@
   <metadata>
     <id>sha2</id>
     <description>C++ implementation of SHA-2</description>
-    <version>0.0.8</version>
+    <version>0.0.10</version>
     <authors>Sergey Shandar</authors>
     <copyright>Sergey Shandar</copyright>
     <licenseUrl>https://raw.githubusercontent.com/sergey-shandar/sha2/master/LICENSE</licenseUrl>

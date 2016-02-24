@@ -206,8 +206,7 @@ namespace sha2
         T value = 0;
 
         {
-            typedef typename decltype(*::std::begin(bytes)) v_t;
-            static int const input_size = sizeof(v_t) * CHAR_BIT;
+            static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
 
             static_assert(
                 uint_size >= input_size,
