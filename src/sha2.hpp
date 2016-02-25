@@ -193,7 +193,7 @@ namespace sha2
     {
     public:
         T value;
-        size_t size;
+        uint32_t size;
     };
 
     template<class I>
@@ -212,9 +212,24 @@ namespace sha2
             {
                 return { 0, 0 };
             }
-            auto const result = { *_begin, sizeof(value_type) * CHAR_BIT };
+            result_t const result = { *_begin, sizeof(value_type) * CHAR_BIT };
             ++_begin;
             return result;
+        }
+        value_type next(uint32_t &size)
+        {
+            if (_begin == _end)
+            {
+                size = 0;
+                return 0;
+            }
+            else
+            {
+                size = sizeof(value_type) * CHAR_BIT;
+                value_type const result = *_begin;
+                ++_begin;
+                return result;
+            }
         }
     };
 
@@ -238,27 +253,25 @@ namespace sha2
     {
         static int const uint_size = sizeof(T) * CHAR_BIT;
 
+        auto bits = bit_sequence(bytes);
+
         T size_lo = 0;
         T size_hi = 0;
         state_t<T> state(initial);
         T value = 0;
 
-        {
-        static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
-        
-        static_assert(
-            uint_size >= input_size,
-            "an input unit should not be bigger than an internal unit");
-        static_assert(
-            uint_size % input_size == 0, 
-            "");
 
-            for (auto const v : bytes)
+        while(true)
         {
-            auto const value_offset = size_lo % uint_size;
-            value |= 
-                    static_cast<T>(make_unsigned(v)) << ((uint_size - input_size) - value_offset);
-            if (value_offset == (uint_size - input_size))
+            uint32_t b_size;
+            auto const b = bits.next(b_size);
+            if (b_size == 0)
+            {
+                break;
+            }
+            auto const value_offset = (uint_size - b_size) - size_lo % uint_size;
+            value |= static_cast<T>(make_unsigned(b)) << value_offset;
+            if (value_offset == 0)
             {
                 auto const i = (size_lo / uint_size) % 16;
                 state.w[i] = value;
@@ -266,14 +279,13 @@ namespace sha2
                 if (i == 15)
                 {
                     state.process();
-                    if (size_lo == std::numeric_limits<T>::max() - (input_size - 1))
+                    if (size_lo == std::numeric_limits<T>::max() - (b_size - 1))
                     {
                         ++size_hi;
                     }
                 }
             }
-            size_lo += input_size;
-        }
+            size_lo += b_size;
         }
 
         // 1 bit at the end.
@@ -300,6 +312,7 @@ namespace sha2
             state.w[15] = size_lo;
             state.process();
         }
+
         return state.result;
     }
 
