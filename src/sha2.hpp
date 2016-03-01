@@ -188,13 +188,6 @@ namespace sha2
         }
     };
 
-    template<class T>
-    class bits_t
-    {
-    public:
-        T value;
-        uint32_t size;
-    };
 
     template<class I>
     class bit_sequence_t
@@ -204,19 +197,8 @@ namespace sha2
         I _end;
     public:
         typedef typename std::iterator_traits<I>::value_type value_type;
-        typedef bits_t<value_type> result_t;
         bit_sequence_t(I begin, I end) : _begin(begin), _end(end) { }
-        result_t operator()()
-        {
-            if (_begin == _end)
-            {
-                return { 0, 0 };
-            }
-            result_t const result = { *_begin, sizeof(value_type) * CHAR_BIT };
-            ++_begin;
-            return result;
-        }
-        value_type next(uint32_t &size)
+        value_type operator()(uint32_t &size)
         {
             if (_begin == _end)
             {
@@ -264,7 +246,7 @@ namespace sha2
         while(true)
         {
             uint32_t b_size;
-            auto const b = bits.next(b_size);
+            auto const b = bits(b_size);
             if (b_size == 0)
             {
                 break;
@@ -290,10 +272,9 @@ namespace sha2
 
         // 1 bit at the end.
         {
-            auto const value_offset = size_lo % uint_size;
-            value |= static_cast<T>(1) << ((uint_size - 1) - value_offset);
             auto i = (size_lo / uint_size) % 16;
-            state.w[i] = value;
+            state.w[i] =
+                value | static_cast<T>(1) << ((uint_size - 1) - size_lo % uint_size);
             ++i;
             if (i > 14)
             {
