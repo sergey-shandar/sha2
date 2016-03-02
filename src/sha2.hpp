@@ -228,6 +228,76 @@ namespace sha2
         return static_cast<::std::make_unsigned_t<T>>(v);
     }
 
+    // remainder requirements:
+    // - T value()
+    // - int size()
+    template<class T, class I, class R>
+    ::std::array<T, 8> process(
+        ::std::array<T, 8> const &initial,
+        I const &input,
+        R const &remainder)
+    {
+        static int const uint_size = sizeof(T) * CHAR_BIT;
+
+        T size_hi = 0;
+        state_t<T> state(initial);
+        static const auto i_max = ::std::numeric_limits<T>::max() / uint_size;
+        T i = 0;
+
+        static_assert(
+            sizeof(*input.begin()) == sizeof(T),
+            "sizeof(*input.begin()) != sizeof(T)");
+        static_assert(
+            sizeof(remainder.value()) == sizeof(T),
+            "sizeof(remainder.value()) != sizeof(T)");
+
+        for (auto const value: input)
+        {
+            auto const index = i % 16;
+            state.w[index] = value;
+            if (index == 15)
+            {
+                state.process();
+                if (i == i_max)
+                {
+                    ++size_hi;
+                    i = 0;
+                }
+            }
+            ++i;
+        }
+
+        // remainder and 1 bit at the end.
+        {
+            // size < unit_size always.
+            auto index = i % 16;
+            auto const size = remainder.size();
+            state.w[index] =
+                remainder.value() | 
+                static_cast<T>(1) << ((uint_size - 1) - size);
+            //
+            ++index;
+            if (index > 14)
+            {
+                for (; index < 16; ++index)
+                {
+                    state.w[index] = 0;
+                }
+                state.process();
+                index = 0;
+            }
+            for (; index < 14; ++index)
+            {
+                state.w[index] = 0;
+            }
+            state.w[14] = size_hi;
+            state.w[15] = i * uint_size + size;
+            state.process();
+        }
+
+        return state.result;
+    }
+
     template<class T, class B>
     ::std::array<T, 8> process_bit_sequence(
         ::std::array<T, 8> const &initial,
@@ -241,7 +311,6 @@ namespace sha2
         T size_hi = 0;
         state_t<T> state(initial);
         T value = 0;
-
 
         while(true)
         {
@@ -308,6 +377,34 @@ namespace sha2
 
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
     typedef ::std::array<uint32_t, 8> sha256_t;
+
+    template<class T>
+    class empty_remainder_t
+    {
+    public:
+        T value() const { return 0; }
+        int size() const { return 0; }
+    };
+
+    template<class Units>
+    sha256_t sha256u(Units const &units)
+    {
+        return process<uint32_t>(
+            {
+                {
+                    0x6a09e667,
+                    0xbb67ae85,
+                    0x3c6ef372,
+                    0xa54ff53a,
+                    0x510e527f,
+                    0x9b05688c,
+                    0x1f83d9ab,
+                    0x5be0cd19,
+                }
+            },
+            units,
+            empty_remainder_t<uint32_t>());
+    }
 
     template<class Bytes>
     sha256_t sha256(Bytes const &bytes)
