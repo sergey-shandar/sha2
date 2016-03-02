@@ -59,21 +59,24 @@ namespace UnitTest
                 });
 		}
 
-        TEST_METHOD(Sha256)
-        {            
+        TEST_METHOD(Sha256U)
+        {
             Assert::AreEqual(
                 sha2::sha256u(::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr)),
                 {
                     0xe3b0c442,
                     0x98fc1c14,
-                    0x9afbf4c8,
-                    0x996fb924,
-                    0x27ae41e4,
-                    0x649b934c,
-                    0xa495991b,
-                    0x7852b855
+                0x9afbf4c8,
+                0x996fb924,
+                0x27ae41e4,
+                0x649b934c,
+                0xa495991b,
+                0x7852b855
                 });
+        }
 
+        TEST_METHOD(Sha256)
+        {            
             Assert::AreEqual(
                 sha2::sha256(from_string("")),
                 {

@@ -35,15 +35,15 @@ template<size_t S>
     return ::boost::make_iterator_range_n(x, S - 1);
 }
 
-template<uint8_t value>
+template<class T, T value>
 class n_iterator_t
 {
 private:
-    static uint8_t const _value = value;
+    static T const _value = value;
     uint64_t _index;
 public:
     typedef ::std::random_access_iterator_tag iterator_category;
-    typedef uint8_t const value_type;
+    typedef T const value_type;
     typedef int64_t difference_type;
     typedef value_type *pointer;
     typedef value_type &reference;
@@ -61,11 +61,14 @@ public:
     }
 };
 
-template<uint8_t value, uint64_t size>
-class n_range_t
+template<class T, T value, uint64_t size>
+class nrange_t
 {
 public:
-    typedef n_iterator_t<value> iterator_t;
+    typedef n_iterator_t<T, value> iterator_t;
     iterator_t begin() const { return iterator_t(0); }
     iterator_t end() const { return iterator_t(size); }
 };
+
+template<uint8_t value, uint64_t size>
+using n_range_t = nrange_t<uint8_t, value, size>;

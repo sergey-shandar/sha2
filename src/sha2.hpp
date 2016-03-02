@@ -241,11 +241,11 @@ namespace sha2
 
         T size_hi = 0;
         state_t<T> state(initial);
-        static const auto i_max = ::std::numeric_limits<T>::max() / uint_size;
+        static const auto i_max = ::std::numeric_limits<T>::max() / uint_size + 1;
         T i = 0;
 
         static_assert(
-            sizeof(*input.begin()) == sizeof(T),
+            sizeof(*::std::begin(input)) == sizeof(T),
             "sizeof(*input.begin()) != sizeof(T)");
         static_assert(
             sizeof(remainder.value()) == sizeof(T),
@@ -255,16 +255,15 @@ namespace sha2
         {
             auto const index = i % 16;
             state.w[index] = value;
+            i = (i + 1) % i_max;
             if (index == 15)
             {
                 state.process();
-                if (i == i_max)
+                if (i == 0)
                 {
                     ++size_hi;
-                    i = 0;
                 }
             }
-            ++i;
         }
 
         // remainder and 1 bit at the end.
