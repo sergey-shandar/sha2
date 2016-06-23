@@ -36,3 +36,4 @@ Release/
 packages/
 *.nupkg
 *.suo
+*.db

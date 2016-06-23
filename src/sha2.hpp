@@ -43,7 +43,8 @@ namespace sha2
     // Initialize array of round constants :
     // (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311) :
     template<class Dummy>
-    typename parameters_t<uint32_t, Dummy>::k_t parameters_t<uint32_t, Dummy>::k = {
+    typename parameters_t<uint32_t, Dummy>::k_t parameters_t<uint32_t, Dummy>::k = 
+    {
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
         0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
         0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -113,10 +114,7 @@ namespace sha2
 
         T w[p_t::size];
 
-        state_t(::std::array<T, 8> const &initial) :
-            result(initial)
-        {
-        }
+        state_t(::std::array<T, 8> const &initial) : result(initial) {}
 
         void process()
         {
@@ -188,7 +186,6 @@ namespace sha2
         }
     };
 
-
     template<class I>
     class bit_sequence_t
     {
@@ -196,8 +193,11 @@ namespace sha2
         I _begin;
         I _end;
     public:
+
         typedef typename std::iterator_traits<I>::value_type value_type;
+
         bit_sequence_t(I begin, I end) : _begin(begin), _end(end) { }
+
         value_type operator()(uint32_t &size)
         {
             if (_begin == _end)
@@ -241,7 +241,8 @@ namespace sha2
 
         T size_hi = 0;
         state_t<T> state(initial);
-        static const auto i_max = ::std::numeric_limits<T>::max() / uint_size + 1;
+        static const auto i_max = 
+            ::std::numeric_limits<T>::max() / uint_size + 1;
         T i = 0;
 
         static_assert(
