@@ -228,15 +228,21 @@ namespace sha2
         return static_cast<::std::make_unsigned_t<T>>(v);
     }
 
-    // remainder requirements:
-    // - T value()
-    // - int size()
-    template<class T, class I, class R>
-    ::std::array<T, 8> process(
-        ::std::array<T, 8> const &initial,
-        I const &input,
-        R const &remainder)
+    // input requirements:
+    // - iterator begin() const;
+    // - iterator end() const;
+    // - T remainder_value()
+    // - size_t remainder_size() - it should be in the range [0, sizeof(T)).
+    template<class T, class I>
+    ::std::array<T, 8> process(::std::array<T, 8> const &initial, I const &input)
     {
+        static_assert(
+            sizeof(*input.begin()) == sizeof(T),
+            "sizeof(*input.begin()) != sizeof(T)");
+        static_assert(
+            sizeof(input.remainder()) == sizeof(T),
+            "sizeof(input.remainder()) != sizeof(T)");
+
         static int const uint_size = sizeof(T) * CHAR_BIT;
 
         T size_hi = 0;
@@ -244,13 +250,6 @@ namespace sha2
         static const auto i_max = 
             ::std::numeric_limits<T>::max() / uint_size + 1;
         T i = 0;
-
-        static_assert(
-            sizeof(*::std::begin(input)) == sizeof(T),
-            "sizeof(*input.begin()) != sizeof(T)");
-        static_assert(
-            sizeof(remainder.value()) == sizeof(T),
-            "sizeof(remainder.value()) != sizeof(T)");
 
         for (auto const value: input)
         {
@@ -271,9 +270,9 @@ namespace sha2
         {
             // size < unit_size always.
             auto index = i % 16;
-            auto const size = remainder.size();
+            auto const size = input.remainder_size();
             state.w[index] =
-                remainder.value() | 
+                input.remainder() | 
                 static_cast<T>(1) << ((uint_size - 1) - size);
             //
             ++index;
@@ -368,7 +367,7 @@ namespace sha2
 
     // bytes is a function wich returns optional(bitloads, size)
     template<class T, class Bytes>
-    ::std::array<T, 8> process(
+    ::std::array<T, 8> process_old(
         ::std::array<T, 8> const &initial,
         Bytes const &bytes)
     {
@@ -378,16 +377,48 @@ namespace sha2
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
     typedef ::std::array<uint32_t, 8> sha256_t;
 
-    template<class T>
-    class empty_remainder_t
+    template<class I>
+    class with_remainder_t
     {
     public:
-        T value() const { return 0; }
-        int size() const { return 0; }
+        typedef typename ::std::iterator_traits<I>::value_type value_type;
+    private:
+        I _begin;
+        I _end;
+        value_type const _remainder;
+        int const _remainder_size;
+    public:
+        with_remainder_t(
+            I const &begin,
+            I const &end,
+            value_type remainder,
+            int remainder_size):
+            _begin(begin),
+            _end(end),
+            _remainder(remainder),
+            _remainder_size(remainder_size)
+        {
+        }
+        I begin() const { return _begin; }
+        I end() const { return _end; }
+        value_type remainder() const { return _remainder; }
+        int remainder_size() const { return _remainder_size; }
     };
 
-    template<class Units>
-    sha256_t sha256u(Units const &units)
+    template<class I>
+    auto no_remainder(I const &begin, I const &end)
+    {
+        return with_remainder_t<I>(begin, end, 0, 0);
+    }
+
+    template<class C>
+    auto no_remainder(C const &c)
+    {
+        return no_remainder(::std::begin(c), ::std::end(c));
+    }
+
+    template<class Input>
+    sha256_t sha256x(Input const &input)
     {
         return process<uint32_t>(
             {
@@ -402,8 +433,14 @@ namespace sha2
                     0x5be0cd19,
                 }
             },
-            units,
-            empty_remainder_t<uint32_t>());
+            input);
+    }
+
+    // typeof *Units.begin() is uint32.
+    template<class Units>
+    sha256_t sha256u(Units const &units)
+    {
+        return sha256x(no_remainder(units));
     }
 
     template<class Bytes>
@@ -412,7 +449,7 @@ namespace sha2
         // Initialize hash values :
         // (first 32 bits of the fractional parts of the square roots of the
         // first 8 primes 2..19) :
-        return process<uint32_t>(
+        return process_old<uint32_t>(
             {
                 {
                     0x6a09e667,
@@ -436,7 +473,7 @@ namespace sha2
         // SHA - 224 initial hash values(in big endian) :
         // (The second 32 bits of the fractional parts of the square roots of 
         // the 9th through 16th primes 23..53)
-        auto const result = process<uint32_t>(
+        auto const result = process_old<uint32_t>(
             {
                 {
                     0xc1059ed8,
@@ -469,7 +506,7 @@ namespace sha2
     template<class Bytes>
     sha512_t sha512(Bytes const &bytes)
     {
-        return process<uint64_t>(
+        return process_old<uint64_t>(
             {
                 {
                     0x6a09e667f3bcc908,
@@ -490,7 +527,7 @@ namespace sha2
     template<class Bytes>
     sha384_t sha384(Bytes const &bytes)
     {
-        auto const result = process<uint64_t>(
+        auto const result = process_old<uint64_t>(
             {
                 {
                     0xcbbb9d5dc1059ed8,
@@ -522,7 +559,7 @@ namespace sha2
     template<class Bytes>
     sha512t256_t sha512t256(Bytes const &bytes)
     {
-        auto const result = process<uint64_t>(
+        auto const result = process_old<uint64_t>(
             {
                 {
                     0x22312194FC2BF72C,
@@ -550,7 +587,7 @@ namespace sha2
     template<class Bytes>
     sha512t256_t sha512t224(Bytes const bytes)
     {
-        auto const result = process<uint64_t>(
+        auto const result = process_old<uint64_t>(
             {
                 {
                     0x8C3D37C819544DA2,
