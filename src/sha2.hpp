@@ -405,10 +405,17 @@ namespace sha2
         int remainder_size() const { return _remainder_size; }
     };
 
+	template<class I, class V>
+	auto with_remainder(
+		I const &begin, I const &end, V remainder, int remainder_size)
+	{
+		return with_remainder_t<I>(begin, end, remainder, remainder_size);
+	}
+
     template<class I>
     auto no_remainder(I const &begin, I const &end)
     {
-        return with_remainder_t<I>(begin, end, 0, 0);
+        return with_remainder(begin, end, 0, 0);
     }
 
     template<class C>

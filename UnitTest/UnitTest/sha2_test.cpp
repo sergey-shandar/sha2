@@ -73,35 +73,67 @@ namespace UnitTest
                     0xa495991b,
                     0x7852b855
                 });
+			Assert::AreEqual(
+				sha2::sha256u(from_string2<uint32_t>("")),
+				{
+					0xe3b0c442,
+					0x98fc1c14,
+					0x9afbf4c8,
+					0x996fb924,
+					0x27ae41e4,
+					0x649b934c,
+					0xa495991b,
+					0x7852b855
+				});
+			Assert::AreEqual(
+				sha2::sha256u(from_string2<uint32_t>(
+					"The quick brown fox jumps over the lazy dog.")),
+					{
+						0xef537f25,
+						0xc895bfa7,
+						0x82526529,
+						0xa9b63d97,
+						0xaa631564,
+						0xd5d789c2,
+						0xb765448c,
+						0x8635fb6c
+					});
+			//                                     0123012301230123012301230123012301230123012
+			auto const x = from_string2<uint32_t>("The quick brown fox jumps over the lazy dog");
+			Assert::AreEqual(x.end() - x.begin(), 10LL);
+			Assert::AreEqual(x.remainder_size(), 24);
+			char const m[] = "god\0";
+			Assert::AreEqual(x.remainder(), *reinterpret_cast<uint32_t const *>(m));
+			Assert::AreEqual(
+				sha2::sha256u(from_string2<uint32_t>(
+					"The quick brown fox jumps over the lazy dog")),
+					{
+						0xd7a8fbb3,
+						0x07d78094,
+						0x69ca9abc,
+						0xb0082e4f,
+						0x8d5651e4,
+						0x6d3cdb76,
+						0x2d02d0bf,
+						0x37c9e592
+					});
         }
 
         TEST_METHOD(Sha256)
         {            
-            Assert::AreEqual(
-                sha2::sha256(from_string("")),
-                {
-                    0xe3b0c442,
-                    0x98fc1c14,
-                    0x9afbf4c8,
-                    0x996fb924,
-                    0x27ae41e4,
-                    0x649b934c,
-                    0xa495991b,
-                    0x7852b855
-                });
-            Assert::AreEqual(
-                sha2::sha256(from_string(
-                    "The quick brown fox jumps over the lazy dog")),
-                {
-                    0xd7a8fbb3,
-                    0x07d78094,
-                    0x69ca9abc,
-                    0xb0082e4f,
-                    0x8d5651e4,
-                    0x6d3cdb76,
-                    0x2d02d0bf,
-                    0x37c9e592
-                });
+			Assert::AreEqual(
+				sha2::sha256(from_string(
+					"The quick brown fox jumps over the lazy dog")),
+					{
+						0xd7a8fbb3,
+						0x07d78094,
+						0x69ca9abc,
+						0xb0082e4f,
+						0x8d5651e4,
+						0x6d3cdb76,
+						0x2d02d0bf,
+						0x37c9e592
+					});
             Assert::AreEqual(
                 sha2::sha256(from_string(
                     "The quick brown fox jumps over the lazy dog.")),

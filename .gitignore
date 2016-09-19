@@ -37,3 +37,4 @@ packages/
 *.nupkg
 *.suo
 *.db
+*.log
