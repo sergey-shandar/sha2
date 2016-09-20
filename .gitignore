@@ -35,3 +35,6 @@ Release/
 *.sdf
 packages/
 *.nupkg
+*.suo
+*.log
+*.db

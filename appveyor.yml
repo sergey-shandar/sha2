@@ -1,0 +1,3 @@
+before_build:
+  - cd UnitTest
+  - nuget restore
