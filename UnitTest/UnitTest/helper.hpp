@@ -116,7 +116,7 @@ public:
     bool operator!=(n_iterator_t const &i) const { return !operator==(i); }
     n_iterator_t &operator++()
     {
-        _index++;
+        ++_index;
         return *this;
     }
     reference operator *()
@@ -130,8 +130,8 @@ class nrange_t
 {
 public:
     typedef n_iterator_t<T, value> iterator_t;
-    iterator_t begin() const { return iterator_t(0); }
-    iterator_t end() const { return iterator_t(size); }
+    static iterator_t begin() { return iterator_t(0); }
+    static iterator_t end() { return iterator_t(size); }
 };
 
 template<uint8_t value, uint64_t size>

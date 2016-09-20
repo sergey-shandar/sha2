@@ -445,15 +445,6 @@ namespace sha2
             input);
     }
 
-	/*
-    // typeof *Units.begin() is uint32.
-    template<class Units>
-    sha256_t sha256u(Units const &units)
-    {
-        return sha256x(no_remainder(units));
-    }
-	*/
-
     template<class Bytes>
     sha256_t sha256(Bytes const &bytes)
     {
