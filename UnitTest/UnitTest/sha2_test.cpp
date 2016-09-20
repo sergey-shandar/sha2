@@ -59,22 +59,23 @@ namespace UnitTest
                 });
 		}
 
-        TEST_METHOD(Sha256U)
-        {
-            Assert::AreEqual(
-                sha2::sha256u(::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr)),
-                {
-                    0xe3b0c442,
-                    0x98fc1c14,
-                    0x9afbf4c8,
-                    0x996fb924,
-                    0x27ae41e4,
-                    0x649b934c,
-                    0xa495991b,
-                    0x7852b855
-                });
+		TEST_METHOD(Sha256U)
+		{
+			/*
 			Assert::AreEqual(
-				sha2::sha256u(from_string2<uint32_t>("")),
+				sha2::sha256u(::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr)),
+				{
+					0xe3b0c442,
+					0x98fc1c14,
+					0x9afbf4c8,
+					0x996fb924,
+					0x27ae41e4,
+					0x649b934c,
+					0xa495991b,
+					0x7852b855
+				});
+			Assert::AreEqual(
+				sha2::sha256u(from_string32("")),
 				{
 					0xe3b0c442,
 					0x98fc1c14,
@@ -98,15 +99,18 @@ namespace UnitTest
 						0xb765448c,
 						0x8635fb6c
 					});
+			*/
 			//                                     0123012301230123012301230123012301230123012
 			auto const x = from_string2<uint32_t>("The quick brown fox jumps over the lazy dog");
 			Assert::AreEqual(x.end() - x.begin(), 10LL);
 			Assert::AreEqual(x.remainder_size(), 24);
-			char const m[] = "god\0";
+			char const m[] = "\0god";
 			Assert::AreEqual(x.remainder(), *reinterpret_cast<uint32_t const *>(m));
+			//                                 d o g
+			Assert::AreEqual(x.remainder(), 0x646F6700u);
 			Assert::AreEqual(
-				sha2::sha256u(from_string2<uint32_t>(
-					"The quick brown fox jumps over the lazy dog")),
+				sha2::sha256u(x /*from_string2<uint32_t>(
+					"The quick brown fox jumps over the lazy dog")*/),
 					{
 						0xd7a8fbb3,
 						0x07d78094,

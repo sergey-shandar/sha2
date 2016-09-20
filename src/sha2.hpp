@@ -273,7 +273,8 @@ namespace sha2
             auto const size = input.remainder_size();
             state.w[index] =
                 input.remainder() | 
-                static_cast<T>(1) << ((uint_size - 1) - size);
+                (static_cast<T>(1) << ((uint_size - 1) - size));
+
             //
             ++index;
             if (index > 14)
@@ -297,6 +298,7 @@ namespace sha2
         return state.result;
     }
 
+	// old process
     template<class T, class B>
     ::std::array<T, 8> process_bit_sequence(
         ::std::array<T, 8> const &initial,
@@ -425,7 +427,7 @@ namespace sha2
     }
 
     template<class Input>
-    sha256_t sha256x(Input const &input)
+    sha256_t sha256u(Input const &input)
     {
         return process<uint32_t>(
             {
@@ -443,12 +445,14 @@ namespace sha2
             input);
     }
 
+	/*
     // typeof *Units.begin() is uint32.
     template<class Units>
     sha256_t sha256u(Units const &units)
     {
         return sha256x(no_remainder(units));
     }
+	*/
 
     template<class Bytes>
     sha256_t sha256(Bytes const &bytes)

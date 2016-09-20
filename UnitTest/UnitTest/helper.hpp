@@ -74,13 +74,13 @@ auto from_string2(char const (&s)[S])
 	typedef V const *iterator_t;
 	auto const char_size = S - 1;
 	auto const size = char_size / sizeof(V);
-	auto const char_remainder_size = char_size % sizeof(V);
-	auto const remainder_size = char_remainder_size * CHAR_BIT;
+	auto const remainder_size = char_size % sizeof(V);
+	auto const remainder_offset = sizeof(V) - remainder_size;
 	auto const begin = reinterpret_cast<iterator_t>(s);
 	auto const end = begin + size;
 	char char_remainder[sizeof(V)] = {};
 	auto const remainder_begin = reinterpret_cast<char const *>(end);
-	auto const remainder_end = remainder_begin + char_remainder_size;
+	auto const remainder_end = remainder_begin + remainder_size;
 	auto j = char_remainder;
 	for (auto i = remainder_begin; i != remainder_end; ++i, ++j)
 	{
@@ -89,8 +89,14 @@ auto from_string2(char const (&s)[S])
 	return sha2::with_remainder(
 		iterator(begin),
 		iterator(end),
-		change_char_order(*reinterpret_cast<V const *>(char_remainder)) >> (sizeof(V) * CHAR_BIT - remainder_size),
-		remainder_size);
+		change_char_order(*reinterpret_cast<V const *>(char_remainder)),
+		remainder_size * CHAR_BIT);
+}
+
+template<size_t S>
+auto from_string32(char const (&s)[S])
+{
+	return from_string2<uint32_t>(s);
 }
 
 template<class T, T value>
