@@ -504,10 +504,10 @@ namespace sha2
 
     typedef ::std::array<uint64_t, 6> sha384_t;
 
-    template<class Bytes>
-    sha384_t sha384(Bytes const &bytes)
+    template<class Input>
+    sha384_t sha384(Input const &input)
     {
-        auto const result = process_old<uint64_t>(
+        auto const result = process<uint64_t>(
             {
                 {
                     0xcbbb9d5dc1059ed8,
@@ -520,7 +520,7 @@ namespace sha2
                     0x47b5481dbefa4fa4,
                 }
             },
-            bytes);
+            input);
         return 
             {
                 {
@@ -536,10 +536,10 @@ namespace sha2
 
     typedef ::std::array<uint64_t, 4> sha512t256_t;
 
-    template<class Bytes>
-    sha512t256_t sha512t256(Bytes const &bytes)
+    template<class Input>
+    sha512t256_t sha512t256(Input const &input)
     {
-        auto const result = process_old<uint64_t>(
+        auto const result = process<uint64_t>(
             {
                 {
                     0x22312194FC2BF72C,
@@ -552,7 +552,7 @@ namespace sha2
                     0x0EB72DDC81C52CA2
                 }
             },
-            bytes);
+            input);
         return
             {
                 {
@@ -564,10 +564,10 @@ namespace sha2
             };
     }
 
-    template<class Bytes>
-    sha512t256_t sha512t224(Bytes const bytes)
+    template<class Input>
+    sha512t256_t sha512t224(Input const input)
     {
-        auto const result = process_old<uint64_t>(
+        auto const result = process<uint64_t>(
             {
                 {
                     0x8C3D37C819544DA2,
@@ -580,7 +580,7 @@ namespace sha2
                     0x1112E6AD91D692A1,
                 }
             },
-            bytes);
+            input);
         return
             {
                 {

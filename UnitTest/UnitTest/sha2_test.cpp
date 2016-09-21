@@ -139,7 +139,7 @@ namespace UnitTest
         TEST_METHOD(Sha384)
         {
             Assert::AreEqual(
-                sha2::sha384(from_string("")),
+                sha2::sha384(from_string64("")),
                 {
                     0x38b060a751ac9638,
                     0x4cd9327eb1b1e36a,
@@ -153,7 +153,7 @@ namespace UnitTest
         TEST_METHOD(Sha512t256)
         {
             Assert::AreEqual(
-                sha2::sha512t256(from_string("")),
+                sha2::sha512t256(from_string64("")),
                 {
                     0xc672b8d1ef56ed28,
                     0xab87c3622c511406,
@@ -165,7 +165,7 @@ namespace UnitTest
         TEST_METHOD(Sha512t224)
         {
             Assert::AreEqual(
-                sha2::sha512t224(from_string("")),
+                sha2::sha512t224(from_string64("")),
                 {
                     0x6ed0dd02806fa89e,
                     0x25de060c19d3ac86,
