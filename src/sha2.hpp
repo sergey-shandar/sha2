@@ -427,7 +427,7 @@ namespace sha2
     }
 
     template<class Input>
-    sha256_t sha256u(Input const &input)
+    sha256_t sha256(Input const &input)
     {
         return process<uint32_t>(
             {
@@ -445,37 +445,15 @@ namespace sha2
             input);
     }
 
-    template<class Bytes>
-    sha256_t sha256(Bytes const &bytes)
-    {
-        // Initialize hash values :
-        // (first 32 bits of the fractional parts of the square roots of the
-        // first 8 primes 2..19) :
-        return process_old<uint32_t>(
-            {
-                {
-                    0x6a09e667,
-                    0xbb67ae85,
-                    0x3c6ef372,
-                    0xa54ff53a,
-                    0x510e527f,
-                    0x9b05688c,
-                    0x1f83d9ab,
-                    0x5be0cd19,
-                }
-            },
-            bytes);
-    }
-
     typedef ::std::array<uint32_t, 7> sha224_t;
 
-    template<class Bytes>
-    sha224_t sha224(Bytes const &bytes)
+    template<class Input>
+    sha224_t sha224(Input const &input)
     {
         // SHA - 224 initial hash values(in big endian) :
         // (The second 32 bits of the fractional parts of the square roots of 
         // the 9th through 16th primes 23..53)
-        auto const result = process_old<uint32_t>(
+        auto const result = process<uint32_t>(
             {
                 {
                     0xc1059ed8,
@@ -488,7 +466,7 @@ namespace sha2
                     0xbefa4fa4,
                 }
             },
-            bytes);
+            input);
         return
         {
             {

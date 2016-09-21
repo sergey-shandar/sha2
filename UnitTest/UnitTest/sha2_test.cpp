@@ -23,7 +23,7 @@ namespace UnitTest
 		TEST_METHOD(Sha224)
 		{
             Assert::AreEqual(
-                sha2::sha224(from_string("")), 
+                sha2::sha224(from_string32("")), 
                 { 
                     0xd14a028c,
                     0x2a3a2bc9,
@@ -34,7 +34,7 @@ namespace UnitTest
                     0xc5b3e42f
                 });
             Assert::AreEqual(
-                sha2::sha224(from_string(
+                sha2::sha224(from_string32(
                     "The quick brown fox jumps over the lazy dog")),
                 {
                     0x730e109b,
@@ -46,7 +46,7 @@ namespace UnitTest
                     0xad911525
                 });
             Assert::AreEqual(
-                sha2::sha224(from_string(
+                sha2::sha224(from_string32(
                     "The quick brown fox jumps over the lazy dog.")),
                 {
                     0x619cba8e,
@@ -62,7 +62,7 @@ namespace UnitTest
 		TEST_METHOD(Sha256U)
 		{
 			Assert::AreEqual(
-				sha2::sha256u(sha2::no_remainder(::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr))),
+				sha2::sha256(sha2::no_remainder(::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr))),
 				{
 					0xe3b0c442,
 					0x98fc1c14,
@@ -74,7 +74,7 @@ namespace UnitTest
 					0x7852b855
 				});
 			Assert::AreEqual(
-				sha2::sha256u(from_string32("")),
+				sha2::sha256(from_string32("")),
 				{
 					0xe3b0c442,
 					0x98fc1c14,
@@ -86,7 +86,7 @@ namespace UnitTest
 					0x7852b855
 				});
 			Assert::AreEqual(
-				sha2::sha256u(from_string32(
+				sha2::sha256(from_string32(
 					"The quick brown fox jumps over the lazy dog.")),
 					{
 						0xef537f25,
@@ -107,7 +107,7 @@ namespace UnitTest
 			//                                 d o g
 			Assert::AreEqual(x.remainder(), 0x646F6700u);
 			Assert::AreEqual(
-				sha2::sha256u(x),
+				sha2::sha256(x),
 					{
 						0xd7a8fbb3,
 						0x07d78094,
@@ -120,6 +120,7 @@ namespace UnitTest
 					});
         }
 
+		/*
         TEST_METHOD(Sha256)
         {            
 			Assert::AreEqual(
@@ -149,6 +150,7 @@ namespace UnitTest
                     0x8635fb6c
                 });
         }
+		*/
 
         TEST_METHOD(Sha512)
         {

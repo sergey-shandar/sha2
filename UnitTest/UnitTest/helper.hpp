@@ -119,7 +119,7 @@ public:
         ++_index;
         return *this;
     }
-    reference operator *()
+    reference operator *() const
     {
         return _value;
     }
@@ -145,11 +145,11 @@ constexpr T fill(uint8_t value)
 
 template<class T, uint8_t value, uint64_t size>
 class nrange8_t: 
-	nrange_t<T, fill<T>(value), size / sizeof(T)>
+	public nrange_t<T, fill<T>(value), size / sizeof(T)>
 {
 public:
-	static constexpr int remainder_size() { return size % sizeof(T); }
-	static constexpr T remainder() { return change_char_order(fill<T>(value)); }
+	static constexpr int remainder_size() { return (size % sizeof(T)) * CHAR_BIT; }
+	static constexpr T remainder() { return fill<T>(value) << (sizeof(T) * CHAR_BIT - remainder_size()); }
 };
 
 template<uint8_t value, uint64_t size>
