@@ -43,7 +43,8 @@ namespace sha2
     // Initialize array of round constants :
     // (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311) :
     template<class Dummy>
-    typename parameters_t<uint32_t, Dummy>::k_t parameters_t<uint32_t, Dummy>::k = {
+    typename parameters_t<uint32_t, Dummy>::k_t parameters_t<uint32_t, Dummy>::k = 
+    {
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
         0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
         0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -113,10 +114,7 @@ namespace sha2
 
         T w[p_t::size];
 
-        state_t(::std::array<T, 8> const &initial) :
-            result(initial)
-        {
-        }
+        state_t(::std::array<T, 8> const &initial) : result(initial) {}
 
         void process()
         {
@@ -189,91 +187,134 @@ namespace sha2
     };
 
     template<class T>
-    auto make_unsigned(T v)
+    constexpr auto make_unsigned(T v)
     {
         return static_cast<::std::make_unsigned_t<T>>(v);
     }
 
-    template<class T, class Bytes>
-    ::std::array<T, 8> process(
-        ::std::array<T, 8> const &initial, Bytes const &bytes)
+    // input requirements:
+    // - iterator begin() const;
+    // - iterator end() const;
+    // - T remainder_value()
+    // - size_t remainder_size() - it should be in the range [0, sizeof(T)).
+    template<class T, class I>
+    ::std::array<T, 8> process(::std::array<T, 8> const &initial, I const &input)
     {
-        static int const uint_size = sizeof(T) * CHAR_BIT;       
+        static_assert(
+            sizeof(*input.begin()) == sizeof(T),
+            "sizeof(*input.begin()) != sizeof(T)");
+        static_assert(
+            sizeof(input.remainder()) == sizeof(T),
+            "sizeof(input.remainder()) != sizeof(T)");
 
-        T size_lo = 0;
+        static int const uint_size = sizeof(T) * CHAR_BIT;
+
         T size_hi = 0;
         state_t<T> state(initial);
-        T value = 0;
+        static const auto i_max = 
+            ::std::numeric_limits<T>::max() / uint_size + 1;
+        T i = 0;
 
+        for (auto const value: input)
         {
-            static int const input_size = sizeof(*::std::begin(bytes)) * CHAR_BIT;
-
-            static_assert(
-                uint_size >= input_size,
-                "an input unit should not be bigger than an internal unit");
-            static_assert(
-                uint_size % input_size == 0,
-                "");
-
-            for (auto const v : bytes)
+            auto const index = i % 16;
+            state.w[index] = value;
+            i = (i + 1) % i_max;
+            if (index == 15)
             {
-                auto const value_offset = size_lo % uint_size;
-                value |=
-                    static_cast<T>(make_unsigned(v)) << ((uint_size - input_size) - value_offset);
-                if (value_offset == (uint_size - input_size))
+                state.process();
+                if (i == 0)
                 {
-                    auto const i = (size_lo / uint_size) % 16;
-                    state.w[i] = value;
-                    value = 0;
-                    if (i == 15)
-                    {
-                        state.process();
-                        if (size_lo == std::numeric_limits<T>::max() - (input_size - 1))
-                        {
-                            ++size_hi;
-                        }
-                    }
+                    ++size_hi;
                 }
-                size_lo += input_size;
             }
         }
 
-        // 1 bit at the end.
+        // remainder and 1 bit at the end.
         {
-            auto const value_offset = size_lo % uint_size;
-            value |= static_cast<T>(1) << ((uint_size - 1) - value_offset);
-            auto i = (size_lo / uint_size) % 16;
-            state.w[i] = value;
-            ++i;
-            if (i > 14)
+            // size < unit_size always.
+            auto index = i % 16;
+            auto const size = input.remainder_size();
+            state.w[index] =
+                input.remainder() | 
+                (static_cast<T>(1) << ((uint_size - 1) - size));
+
+            //
+            ++index;
+            if (index > 14)
             {
-                for (; i < 16; ++i)
+                for (; index < 16; ++index)
                 {
-                    state.w[i] = 0;
+                    state.w[index] = 0;
                 }
                 state.process();
-                i = 0;
+                index = 0;
             }
-            for (; i < 14; ++i)
+            for (; index < 14; ++index)
             {
-                state.w[i] = 0;
+                state.w[index] = 0;
             }
             state.w[14] = size_hi;
-            state.w[15] = size_lo;
+            state.w[15] = i * uint_size + size;
             state.process();
         }
+
         return state.result;
     }
 
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
     typedef ::std::array<uint32_t, 8> sha256_t;
 
-    template<class Bytes>
-    sha256_t sha256(Bytes const &bytes)
+    template<class I>
+    class with_remainder_t
     {
-        // Initialize hash values :
-        // (first 32 bits of the fractional parts of the square roots of the
-        // first 8 primes 2..19) :
+    public:
+        typedef typename ::std::iterator_traits<I>::value_type value_type;
+    private:
+        I _begin;
+        I _end;
+        value_type const _remainder;
+        int const _remainder_size;
+    public:
+        with_remainder_t(
+            I const &begin,
+            I const &end,
+            value_type remainder,
+            int remainder_size):
+            _begin(begin),
+            _end(end),
+            _remainder(remainder),
+            _remainder_size(remainder_size)
+        {
+        }
+        I begin() const { return _begin; }
+        I end() const { return _end; }
+        value_type remainder() const { return _remainder; }
+        int remainder_size() const { return _remainder_size; }
+    };
+
+	template<class I, class V>
+	auto with_remainder(
+		I const &begin, I const &end, V remainder, int remainder_size)
+	{
+		return with_remainder_t<I>(begin, end, remainder, remainder_size);
+	}
+
+    template<class I>
+    auto no_remainder(I const &begin, I const &end)
+    {
+        return with_remainder(begin, end, 0, 0);
+    }
+
+    template<class C>
+    auto no_remainder(C const &c)
+    {
+        return no_remainder(::std::begin(c), ::std::end(c));
+    }
+
+    template<class Input>
+    sha256_t sha256(Input const &input)
+    {
         return process<uint32_t>(
             {
                 {
@@ -287,13 +328,13 @@ namespace sha2
                     0x5be0cd19,
                 }
             },
-            bytes);
+            input);
     }
 
     typedef ::std::array<uint32_t, 7> sha224_t;
 
-    template<class Bytes>
-    sha224_t sha224(Bytes const &bytes)
+    template<class Input>
+    sha224_t sha224(Input const &input)
     {
         // SHA - 224 initial hash values(in big endian) :
         // (The second 32 bits of the fractional parts of the square roots of 
@@ -311,7 +352,7 @@ namespace sha2
                     0xbefa4fa4,
                 }
             },
-            bytes);
+            input);
         return
         {
             {
@@ -328,8 +369,8 @@ namespace sha2
 
     typedef ::std::array<uint64_t, 8> sha512_t;
 
-    template<class Bytes>
-    sha512_t sha512(Bytes const &bytes)
+    template<class Input>
+    sha512_t sha512(Input const &input)
     {
         return process<uint64_t>(
             {
@@ -344,13 +385,13 @@ namespace sha2
                     0x5be0cd19137e2179,
                 }
             },
-            bytes);
+            input);
     }
 
     typedef ::std::array<uint64_t, 6> sha384_t;
 
-    template<class Bytes>
-    sha384_t sha384(Bytes const &bytes)
+    template<class Input>
+    sha384_t sha384(Input const &input)
     {
         auto const result = process<uint64_t>(
             {
@@ -365,7 +406,7 @@ namespace sha2
                     0x47b5481dbefa4fa4,
                 }
             },
-            bytes);
+            input);
         return 
             {
                 {
@@ -381,8 +422,8 @@ namespace sha2
 
     typedef ::std::array<uint64_t, 4> sha512t256_t;
 
-    template<class Bytes>
-    sha512t256_t sha512t256(Bytes const &bytes)
+    template<class Input>
+    sha512t256_t sha512t256(Input const &input)
     {
         auto const result = process<uint64_t>(
             {
@@ -397,7 +438,7 @@ namespace sha2
                     0x0EB72DDC81C52CA2
                 }
             },
-            bytes);
+            input);
         return
             {
                 {
@@ -409,8 +450,8 @@ namespace sha2
             };
     }
 
-    template<class Bytes>
-    sha512t256_t sha512t224(Bytes const bytes)
+    template<class Input>
+    sha512t256_t sha512t224(Input const input)
     {
         auto const result = process<uint64_t>(
             {
@@ -425,7 +466,7 @@ namespace sha2
                     0x1112E6AD91D692A1,
                 }
             },
-            bytes);
+            input);
         return
             {
                 {
