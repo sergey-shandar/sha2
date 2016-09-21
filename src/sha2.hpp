@@ -187,7 +187,7 @@ namespace sha2
     };
 
     template<class T>
-    auto make_unsigned(T v)
+    constexpr auto make_unsigned(T v)
     {
         return static_cast<::std::make_unsigned_t<T>>(v);
     }
