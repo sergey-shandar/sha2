@@ -106,7 +106,7 @@ namespace UnitTest
         TEST_METHOD(A256FromString4)
         {
             Assert::AreEqual(
-                sha2::sha256u(from_string2<uint32_t>("\xc9\x8c\x8e\x55")),
+                sha2::sha256u(from_string32("\xc9\x8c\x8e\x55")),
                 {
                     0x7abc22c0, 0xae5af26c, 0xe93dbb94, 0x433a0e0b, 0x2e119d01, 0x4f8e7f65, 0xbd56c61c, 0xcccd9504
                 });

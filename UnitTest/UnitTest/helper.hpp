@@ -39,7 +39,7 @@ template<size_t S>
     return ::boost::make_iterator_range_n(x, S - 1);
 }
 
-inline uint32_t change_char_order(uint32_t v)
+constexpr uint32_t change_char_order(uint32_t v)
 {
 	return (v << 24) | ((v << 8) & 0xFF0000) | ((v >> 8) & 0xFF00) | ((v >> 24) & 0xFF);
 }
@@ -136,3 +136,24 @@ public:
 
 template<uint8_t value, uint64_t size>
 using n_range_t = nrange_t<uint8_t, value, size>;
+
+template<class T>
+constexpr T fill(uint8_t value)
+{
+	return static_cast<T>(0x0101010101010101ull) * static_cast<T>(value);
+}
+
+template<class T, uint8_t value, uint64_t size>
+class nrange8_t: 
+	nrange_t<T, fill<T>(value), size / sizeof(T)>
+{
+public:
+	static constexpr int remainder_size() { return size % sizeof(T); }
+	static constexpr T remainder() { return change_char_order(fill<T>(value)); }
+};
+
+template<uint8_t value, uint64_t size>
+nrange8_t<uint32_t, value, size> nrange32()
+{
+	return nrange8_t<uint32_t, value, size>();
+}
