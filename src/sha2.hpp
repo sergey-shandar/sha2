@@ -483,10 +483,10 @@ namespace sha2
 
     typedef ::std::array<uint64_t, 8> sha512_t;
 
-    template<class Bytes>
-    sha512_t sha512(Bytes const &bytes)
+    template<class Input>
+    sha512_t sha512(Input const &input)
     {
-        return process_old<uint64_t>(
+        return process<uint64_t>(
             {
                 {
                     0x6a09e667f3bcc908,
@@ -499,7 +499,7 @@ namespace sha2
                     0x5be0cd19137e2179,
                 }
             },
-            bytes);
+            input);
     }
 
     typedef ::std::array<uint64_t, 6> sha384_t;

@@ -309,73 +309,73 @@ namespace UnitTest
         TEST_METHOD(A512)
         {
             Assert::AreEqual(
-                sha2::sha512(from_string("")),
+                sha2::sha512(from_string64("")),
                 {
                     0xcf83e1357eefb8bd, 0xf1542850d66d8007, 0xd620e4050b5715dc, 0x83f4a921d36ce9ce,
                     0x47d0d13c5d85f2b0, 0xff8318d2877eec2f, 0x63b931bd47417a81, 0xa538327af927da3e
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 111>()),
+                sha2::sha512(nrange64<0, 111>()),
                 {
                     0x77ddd3a542e530fd, 0x047b8977c657ba6c, 0xe72f1492e360b2b2, 0x212cd264e75ec038,
                     0x82e4ff0525517ab4, 0x207d14c70c2259ba, 0x88d4d335ee0e7e20, 0x543d22102ab1788c
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 112>()),
+                sha2::sha512(nrange64<0, 112>()),
                 {
                     0x2be2e788c8a8adea, 0xa9c89a7f78904cac, 0xea6e39297d75e057, 0x3a73c756234534d6,
                     0x627ab4156b48a665, 0x7b29ab8beb733340, 0x40ad39ead81446bb, 0x09c70704ec707952
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 113>()),
+                sha2::sha512(nrange64<0, 113>()),
                 {
                     0x0e67910bcf0f9ccd, 0xe5464c63b9c850a1, 0x2a759227d16b040d, 0x98986d54253f9f34,
                     0x322318e56b8feb86, 0xc5fb2270ed87f312, 0x52f7f68493ee7597, 0x43909bd75e4bb544
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 122>()),
+                sha2::sha512(nrange64<0, 122>()),
                 {
                     0x4f3f095d015be4a7, 0xa7cc0b8c04da4aa0, 0x9e74351e3a97651f, 0x744c23716ebd9b3e,
                     0x822e5077a01baa5c, 0xc0ed45b9249e88ab, 0x343d4333539df21e, 0xd229da6f4a514e0f
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 1000>()),
+                sha2::sha512(nrange64<0, 1000>()),
                 {
                     0xca3dff61bb23477a, 0xa6087b27508264a6, 0xf9126ee3a004f53c, 0xb8db942ed345f2f2,
                     0xd229b4b59c859220, 0xa1cf1913f34248e3, 0x803bab650e849a3d, 0x9a709edc09ae4a76
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0x41, 1000>()),
+                sha2::sha512(nrange64<0x41, 1000>()),
                 {
                     0x329c52ac62d1fe73, 0x1151f2b895a00475, 0x445ef74f50b979c6, 0xf7bb7cae349328c1,
                     0xd4cb4f7261a0ab43, 0xf936a24b000651d4, 0xa824fcdd577f211a, 0xef8f806b16afe8af
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0x55, 1005>()),
+                sha2::sha512(nrange64<0x55, 1005>()),
                 {
                     0x59f5e54fe299c6a8, 0x764c6b199e44924a, 0x37f59e2b56c3ebad, 0x939b7289210dc8e4,
                     0xc21b9720165b0f4d, 0x4374c90f1bf4fb4a, 0x5ace17a116179801, 0x5052893a48c3d161
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 1000000>()),
+                sha2::sha512(nrange64<0, 1000000>()),
                 {
                     0xce044bc9fd43269d, 0x5bbc946cbebc3bb7, 0x11341115cc4abdf2, 0xedbc3ff2c57ad4b1,
                     0x5deb699bda257fea, 0x5aef9c6e55fcf4cf, 0x9dc25a8c3ce25f2e, 0xfe90908379bff7ed
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0x5a, 0x20000000>()),
+                sha2::sha512(nrange64<0x5a, 0x20000000>()),
                 {
                     0xda172279f3ebbda9, 0x5f6b6e1e5f0ebec6, 0x82c25d3d93561a16, 0x24c2fa9009d64c7e,
                     0x9923f3b46bcaf11d, 0x39a531f43297992b, 0xa4155c7e827bd0f1, 0xe194ae7ed6de4cac
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0, 0x41000000>()),
+                sha2::sha512(nrange64<0, 0x41000000>()),
                 {
                     0x14b1be901cb43549, 0xb4d831e61e5f9df1, 0xc791c85b50e85f9d, 0x6bc64135804ad43c,
                     0xe8402750edbe4e5c, 0x0fc170b99cf78b9f, 0x4ecb9c7e02a15791, 0x1d1bd1832d76784f,
                 });
             Assert::AreEqual(
-                sha2::sha512(n_range_t<0x42, 0x6000003e>()),
+                sha2::sha512(nrange64<0x42, 0x6000003e>()),
                 {
                     0xfd05e13eb771f051, 0x90bd97d62647157e, 0xa8f1f6949a52bb6d, 0xaaedbad5f578ec59,
                     0xb1b8d6c4a7ecb2fe, 0xca6892b4dc138771, 0x670a0f3bd577eea3, 0x26aed40ab7dd58b1

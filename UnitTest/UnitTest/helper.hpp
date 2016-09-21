@@ -44,6 +44,19 @@ constexpr uint32_t change_char_order(uint32_t v)
 	return (v << 24) | ((v << 8) & 0xFF0000) | ((v >> 8) & 0xFF00) | ((v >> 24) & 0xFF);
 }
 
+constexpr uint64_t change_char_order(uint64_t v)
+{
+	return 
+		 (v << 56) |
+		((v << 40) & 0xFF000000000000ull) |
+		((v << 24) & 0x00FF0000000000ull) |
+		((v <<  8) & 0x0000FF00000000ull) | 
+		((v >>  8) & 0x000000FF000000ull) |
+		((v >> 24) & 0x00000000FF0000ull) |
+		((v << 40) & 0x0000000000FF00ull) |
+		((v >> 56) & 0x000000000000FFull);
+}
+
 template<class V>
 class iterator_t
 {
@@ -97,6 +110,12 @@ template<size_t S>
 auto from_string32(char const (&s)[S])
 {
 	return from_string2<uint32_t>(s);
+}
+
+template<size_t S>
+auto from_string64(char const (&s)[S])
+{
+	return from_string2<uint64_t>(s);
 }
 
 template<class T, T value>
@@ -156,4 +175,10 @@ template<uint8_t value, uint64_t size>
 nrange8_t<uint32_t, value, size> nrange32()
 {
 	return nrange8_t<uint32_t, value, size>();
+}
+
+template<uint8_t value, uint64_t size>
+nrange8_t<uint64_t, value, size> nrange64()
+{
+	return nrange8_t<uint64_t, value, size>();
 }

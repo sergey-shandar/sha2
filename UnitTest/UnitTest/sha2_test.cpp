@@ -120,42 +120,10 @@ namespace UnitTest
 					});
         }
 
-		/*
-        TEST_METHOD(Sha256)
-        {            
-			Assert::AreEqual(
-				sha2::sha256(from_string(
-					"The quick brown fox jumps over the lazy dog")),
-					{
-						0xd7a8fbb3,
-						0x07d78094,
-						0x69ca9abc,
-						0xb0082e4f,
-						0x8d5651e4,
-						0x6d3cdb76,
-						0x2d02d0bf,
-						0x37c9e592
-					});
-            Assert::AreEqual(
-                sha2::sha256(from_string(
-                    "The quick brown fox jumps over the lazy dog.")),
-                {
-                    0xef537f25,
-                    0xc895bfa7,
-                    0x82526529,
-                    0xa9b63d97,
-                    0xaa631564,
-                    0xd5d789c2,
-                    0xb765448c,
-                    0x8635fb6c
-                });
-        }
-		*/
-
         TEST_METHOD(Sha512)
         {
             Assert::AreEqual(
-                sha2::sha512(from_string("")),
+                sha2::sha512(from_string64("")),
                 {
                     0xcf83e1357eefb8bd,
                     0xf1542850d66d8007,
