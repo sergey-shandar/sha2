@@ -186,42 +186,6 @@ namespace sha2
         }
     };
 
-    template<class I>
-    class bit_sequence_t
-    {
-    private:
-        I _begin;
-        I _end;
-    public:
-
-        typedef typename std::iterator_traits<I>::value_type value_type;
-
-        bit_sequence_t(I begin, I end) : _begin(begin), _end(end) { }
-
-        value_type operator()(uint32_t &size)
-        {
-            if (_begin == _end)
-            {
-                size = 0;
-                return 0;
-            }
-            else
-            {
-                size = sizeof(value_type) * CHAR_BIT;
-                value_type const result = *_begin;
-                ++_begin;
-                return result;
-            }
-        }
-    };
-
-    template<class C>
-    auto bit_sequence(C &c)
-    {
-        typedef typename decltype(::std::begin(c)) iterator_t;
-        return bit_sequence_t<iterator_t>(::std::begin(c), ::std::end(c));
-    }
-
     template<class T>
     auto make_unsigned(T v)
     {
@@ -296,84 +260,6 @@ namespace sha2
         }
 
         return state.result;
-    }
-
-	// old process
-    template<class T, class B>
-    ::std::array<T, 8> process_bit_sequence(
-        ::std::array<T, 8> const &initial,
-        B const &bytes)
-    {
-        static int const uint_size = sizeof(T) * CHAR_BIT;
-
-        auto bits = bit_sequence(bytes);
-
-        T size_lo = 0;
-        T size_hi = 0;
-        state_t<T> state(initial);
-        T value = 0;
-
-        while(true)
-        {
-            uint32_t b_size;
-            auto const b = bits(b_size);
-            if (b_size == 0)
-            {
-                break;
-            }
-            auto const value_offset = (uint_size - b_size) - size_lo % uint_size;
-            value |= static_cast<T>(make_unsigned(b)) << value_offset;
-            if (value_offset == 0)
-            {
-                auto const i = (size_lo / uint_size) % 16;
-                state.w[i] = value;
-                value = 0;
-                if (i == 15)
-                {
-                    state.process();
-                    if (size_lo == std::numeric_limits<T>::max() - (b_size - 1))
-                    {
-                        ++size_hi;
-                    }
-                }
-            }
-            size_lo += b_size;
-        }
-
-        // 1 bit at the end.
-        {
-            auto i = (size_lo / uint_size) % 16;
-            state.w[i] =
-                value | static_cast<T>(1) << ((uint_size - 1) - size_lo % uint_size);
-            ++i;
-            if (i > 14)
-            {
-                for (; i < 16; ++i)
-                {
-                    state.w[i] = 0;
-                }
-                state.process();
-                i = 0;
-            }
-            for (; i < 14; ++i)
-            {
-                state.w[i] = 0;
-            }
-            state.w[14] = size_hi;
-            state.w[15] = size_lo;
-            state.process();
-        }
-
-        return state.result;
-    }
-
-    // bytes is a function wich returns optional(bitloads, size)
-    template<class T, class Bytes>
-    ::std::array<T, 8> process_old(
-        ::std::array<T, 8> const &initial,
-        Bytes const &bytes)
-    {
-        return process_bit_sequence(initial, bytes);
     }
 
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
