@@ -99,7 +99,7 @@ auto from_string2(char const (&s)[S])
 	{
 		*j = *i;
 	}
-	return sha2::with_remainder(
+	return with_remainder(
 		iterator(begin),
 		iterator(end),
 		change_char_order(*reinterpret_cast<V const *>(char_remainder)),
@@ -181,4 +181,51 @@ template<uint8_t value, uint64_t size>
 nrange8_t<uint64_t, value, size> nrange64()
 {
 	return nrange8_t<uint64_t, value, size>();
+}
+
+template<class I>
+class with_remainder_t
+{
+public:
+	typedef typename ::std::iterator_traits<I>::value_type value_type;
+private:
+	I _begin;
+	I _end;
+	value_type const _remainder;
+	int const _remainder_size;
+public:
+	with_remainder_t(
+		I const &begin,
+		I const &end,
+		value_type remainder,
+		int remainder_size) :
+		_begin(begin),
+		_end(end),
+		_remainder(remainder),
+		_remainder_size(remainder_size)
+	{
+	}
+	I begin() const { return _begin; }
+	I end() const { return _end; }
+	value_type remainder() const { return _remainder; }
+	int remainder_size() const { return _remainder_size; }
+};
+
+template<class I, class V>
+auto with_remainder(
+I const &begin, I const &end, V remainder, int remainder_size)
+{
+	return with_remainder_t<I>(begin, end, remainder, remainder_size);
+}
+
+template<class I>
+auto no_remainder(I const &begin, I const &end)
+{
+	return with_remainder(begin, end, 0, 0);
+}
+
+template<class C>
+auto no_remainder(C const &c)
+{
+	return no_remainder(::std::begin(c), ::std::end(c));
 }

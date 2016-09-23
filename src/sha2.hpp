@@ -259,61 +259,11 @@ namespace sha2
 		}
 	}
 
-    template<class T>
-    constexpr auto make_unsigned(T v)
-    {
-        return static_cast<::std::make_unsigned_t<T>>(v);
-    }
-
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
     typedef ::std::array<uint32_t, 8> sha256_t;
 
-    template<class I>
-    class with_remainder_t
-    {
-    public:
-        typedef typename ::std::iterator_traits<I>::value_type value_type;
-    private:
-        I _begin;
-        I _end;
-        value_type const _remainder;
-        int const _remainder_size;
-    public:
-        with_remainder_t(
-            I const &begin,
-            I const &end,
-            value_type remainder,
-            int remainder_size):
-            _begin(begin),
-            _end(end),
-            _remainder(remainder),
-            _remainder_size(remainder_size)
-        {
-        }
-        I begin() const { return _begin; }
-        I end() const { return _end; }
-        value_type remainder() const { return _remainder; }
-        int remainder_size() const { return _remainder_size; }
-    };
-
-	template<class I, class V>
-	auto with_remainder(
-		I const &begin, I const &end, V remainder, int remainder_size)
-	{
-		return with_remainder_t<I>(begin, end, remainder, remainder_size);
-	}
-
-    template<class I>
-    auto no_remainder(I const &begin, I const &end)
-    {
-        return with_remainder(begin, end, 0, 0);
-    }
-
-    template<class C>
-    auto no_remainder(C const &c)
-    {
-        return no_remainder(::std::begin(c), ::std::end(c));
-    }
+	/*
+	*/
 
     template<class Input>
     sha256_t sha256(Input const &input)
