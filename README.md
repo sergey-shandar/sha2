@@ -19,22 +19,22 @@ C++ implementation of SHA-2:
 namespace sha2
 {
     template<class T>
-    auto sha256(T const &input);
+    ::std::array<uint32_t, 8> sha256(T const &input);
     
     template<class T>
-    auto sha224(T const &input);
+    ::std::array<uint32_t, 7> sha224(T const &input);
     
     template<class T>
-    auto sha384(T const &input);
+    ::std::array<uint64_t, 6> sha384(T const &input);
     
     template<class T>
-    auto sha512(T const &input);
+    ::std::array<uint64_t, 8> sha512(T const &input);
     
     template<class T>
-    auto sha512_256(T const &input);
+    ::std::array<uint64_t, 4> sha512_256(T const &input);
     
     template<class T>
-    auto sha512_224(T const &input);
+    ::std::array<uint64_t, 4> sha512_224(T const &input);
 }
 ```
 
