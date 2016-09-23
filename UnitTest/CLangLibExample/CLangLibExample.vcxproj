@@ -64,17 +64,6 @@
   <ItemGroup>
     <ClInclude Include="CLangLibExample.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\sha2.0.0.10\build\native\sha2.targets" Condition="Exists('..\packages\sha2.0.0.10\build\native\sha2.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\sha2.0.0.10\build\native\sha2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sha2.0.0.10\build\native\sha2.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

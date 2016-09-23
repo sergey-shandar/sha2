@@ -3,7 +3,7 @@
 
 #include "CLangLibExample.h"
 
-#include <sha2.hpp>
+#include "../../src/sha2.hpp"
 
 // This is an example of an exported variable
 int nCLangLibExample=0;
@@ -11,8 +11,8 @@ int nCLangLibExample=0;
 // This is an example of an exported function.
 int fnCLangLibExample(void)
 {
-    uint8_t const x[] = { 0x48 };
-    auto const r = sha2::sha512(x);
+    uint64_t const x[] = { 0x48 };
+    auto const r = sha2::sha512(sha2::no_remainder(x));
     return r[0];
 }
 

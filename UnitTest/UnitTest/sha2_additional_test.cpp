@@ -37,12 +37,12 @@ namespace UnitTest
         TEST_METHOD(A224)
         {
             Assert::AreEqual(
-                sha2::sha224(from_string32("\xFF")), 
+                sha2::sha224(sha2::from_string32("\xFF")), 
                 {
                     0xe33f9d75, 0xe6ae1369, 0xdbabf81b, 0x96b4591a, 0xe46bba30, 0xb591a6b6, 0xc62542b5
                 });
             Assert::AreEqual(
-                sha2::sha224(from_string32("\xe5\xe0\x99\x24")),
+                sha2::sha224(sha2::from_string32("\xe5\xe0\x99\x24")),
                 {
                     0xfd19e746, 0x90d29146, 0x7ce59f07, 0x7df31163, 0x8f1c3a46, 0xe510d0e4, 0x9a67062d
                 });
@@ -91,7 +91,7 @@ namespace UnitTest
         TEST_METHOD(A256FromString1)
         {
             Assert::AreEqual(
-                sha2::sha256(from_string32("\xbd")),
+                sha2::sha256(sha2::from_string32("\xbd")),
                 {
                     0x68325720, 0xaabd7c82, 0xf30f554b, 0x313d0570, 0xc95accbb, 0x7dc4b5aa, 0xe11204c0, 0x8ffe732b
                 });
@@ -100,7 +100,7 @@ namespace UnitTest
         TEST_METHOD(A256FromString4)
         {
             Assert::AreEqual(
-                sha2::sha256(from_string32("\xc9\x8c\x8e\x55")),
+                sha2::sha256(sha2::from_string32("\xc9\x8c\x8e\x55")),
                 {
                     0x7abc22c0, 0xae5af26c, 0xe93dbb94, 0x433a0e0b, 0x2e119d01, 0x4f8e7f65, 0xbd56c61c, 0xcccd9504
                 });
@@ -230,7 +230,7 @@ namespace UnitTest
         TEST_METHOD(A384)
         {
             Assert::AreEqual(
-                sha2::sha384(from_string64("")),
+                sha2::sha384(sha2::from_string64("")),
                 {
                     0x38b060a751ac9638, 0x4cd9327eb1b1e36a, 0x21fdb71114be0743,
                     0x4c0cc7bf63f6e1da, 0x274edebfe76f65fb, 0xd51ad2f14898b95b
@@ -307,7 +307,7 @@ namespace UnitTest
         TEST_METHOD(A512)
         {
             Assert::AreEqual(
-                sha2::sha512(from_string64("")),
+                sha2::sha512(sha2::from_string64("")),
                 {
                     0xcf83e1357eefb8bd, 0xf1542850d66d8007, 0xd620e4050b5715dc, 0x83f4a921d36ce9ce,
                     0x47d0d13c5d85f2b0, 0xff8318d2877eec2f, 0x63b931bd47417a81, 0xa538327af927da3e
