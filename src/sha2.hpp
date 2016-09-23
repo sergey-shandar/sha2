@@ -262,9 +262,6 @@ namespace sha2
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
     typedef ::std::array<uint32_t, 8> sha256_t;
 
-	/*
-	*/
-
     template<class Input>
     sha256_t sha256(Input const &input)
     {
@@ -373,10 +370,10 @@ namespace sha2
             };
     }
 
-    typedef ::std::array<uint64_t, 4> sha512t256_t;
+    typedef ::std::array<uint64_t, 4> sha512_256_t;
 
     template<class Input>
-    sha512t256_t sha512t256(Input const &input)
+    sha512_256_t sha512_256(Input const &input)
     {
         auto const result = _detail::process<uint64_t>(
             {
@@ -404,7 +401,7 @@ namespace sha2
     }
 
     template<class Input>
-    sha512t256_t sha512t224(Input const input)
+    sha512_256_t sha512_224(Input const input)
     {
         auto const result = _detail::process<uint64_t>(
             {
@@ -430,4 +427,139 @@ namespace sha2
                 }
             };
     }
+
+	template<class I>
+	class bit_sequence_t
+	{
+	public:
+		typedef typename ::std::iterator_traits<I>::value_type value_type;
+	private:
+		I _begin;
+		I _end;
+		value_type const _remainder;
+		int const _remainder_size;
+	public:
+		bit_sequence_t(
+			I const &begin,
+			I const &end,
+			value_type remainder,
+			int remainder_size) :
+			_begin(begin),
+			_end(end),
+			_remainder(remainder),
+			_remainder_size(remainder_size)
+		{
+		}
+		I begin() const { return _begin; }
+		I end() const { return _end; }
+		value_type remainder() const { return _remainder; }
+		int remainder_size() const { return _remainder_size; }
+	};
+
+	template<class I, class V>
+	auto bit_sequence(
+		I const &begin, I const &end, V remainder, int remainder_size)
+	{
+		return bit_sequence_t<I>(begin, end, remainder, remainder_size);
+	}
+
+	template<class I>
+	auto no_remainder(I const &begin, I const &end)
+	{
+		return bit_sequence(begin, end, 0, 0);
+	}
+
+	template<class C>
+	auto no_remainder(C const &c)
+	{
+		return no_remainder(::std::begin(c), ::std::end(c));
+	}
+
+	constexpr uint32_t change_char_order(uint32_t v)
+	{
+		return
+			 (v << 24)             |
+			((v <<  8) & 0xFF0000) |
+			((v >>  8) & 0x00FF00) |
+			((v >> 24) & 0x0000FF);
+	}
+
+	constexpr uint64_t change_char_order(uint64_t v)
+	{
+		return
+			 (v << 56)                        |
+			((v << 40) & 0xFF000000000000ull) |
+			((v << 24) & 0x00FF0000000000ull) |
+			((v <<  8) & 0x0000FF00000000ull) |
+			((v >>  8) & 0x000000FF000000ull) |
+			((v >> 24) & 0x00000000FF0000ull) |
+			((v << 40) & 0x0000000000FF00ull) |
+			((v >> 56) & 0x000000000000FFull);
+	}
+
+	template<class V>
+	class iterator_t
+	{
+	private:
+		V const *_i;
+	public:
+		typedef ::std::random_access_iterator_tag iterator_category;
+		typedef V const value_type;
+		typedef int64_t difference_type;
+		typedef value_type *pointer;
+		typedef value_type &reference;
+		explicit iterator_t(V const *i) : _i(i) {}
+		V operator*() const { return change_char_order(*_i); }
+		difference_type operator-(iterator_t const x) const { return _i - x._i; }
+		bool operator!=(iterator_t const x) const { return _i != x._i; }
+		iterator_t &operator++() { ++_i; return *this; }
+	};
+
+	template<class V>
+	auto iterator(V const *i)
+	{
+		return iterator_t<V>(i);
+	}
+
+	template<class V>
+	inline auto from_string(char const *char_begin, char const *char_end)
+	{
+		typedef V const *iterator_t;
+		auto const char_size = char_end - char_begin;
+		auto const size = char_size / sizeof(V);
+		auto const remainder_size = char_size % sizeof(V);
+		auto const begin = reinterpret_cast<iterator_t>(char_begin);
+		auto const end = begin + size;
+		char char_remainder[sizeof(V)] = {};
+		auto const remainder_begin = reinterpret_cast<char const *>(end);
+		auto const remainder_end = remainder_begin + remainder_size;
+		auto j = char_remainder;
+		for (auto i = remainder_begin; i != remainder_end; ++i, ++j)
+		{
+			*j = *i;
+		}
+		return bit_sequence(
+			iterator(begin),
+			iterator(end),
+			change_char_order(*reinterpret_cast<V const *>(char_remainder)),
+			remainder_size * CHAR_BIT);
+	}
+
+	template<class V, size_t S>
+	auto from_string(char const (&s)[S])
+	{
+		return from_string<V>(s, s + (S - 1));
+	}
+
+	template<size_t S>
+	auto from_string32(char const (&s)[S])
+	{
+		return from_string<uint32_t>(s);
+	}
+
+	template<size_t S>
+	auto from_string64(char const (&s)[S])
+	{
+		return from_string<uint64_t>(s);
+	}
 }

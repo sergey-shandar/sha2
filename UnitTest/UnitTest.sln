@@ -6,8 +6,19 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{8E9C5976-C507-4703-B7BD-80BC88BA4ABA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Example", "Example\Example.vcxproj", "{C980DD45-453E-4F4B-9078-ADBCCA518B97}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8E9C5976-C507-4703-B7BD-80BC88BA4ABA} = {8E9C5976-C507-4703-B7BD-80BC88BA4ABA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLangLibExample", "CLangLibExample\CLangLibExample.vcxproj", "{3630DB82-F62E-45F2-99DA-190393C2D21A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8E9C5976-C507-4703-B7BD-80BC88BA4ABA} = {8E9C5976-C507-4703-B7BD-80BC88BA4ABA}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6A09CDD7-1330-4BB9-B60A-8A954DCBD890}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

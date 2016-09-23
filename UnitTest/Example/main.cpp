@@ -1,15 +1,9 @@
-#include <sha2.hpp>
+#include "../../src/sha2.hpp"
 
 #include <boost/range/iterator_range.hpp>
 
-template<size_t S>
-::boost::iterator_range<char const *> from_string(char const (&x)[S])
-{
-    return ::boost::make_iterator_range_n(x, S - 1);
-}
-
 int main()
 {
-    auto const sha512 = sha2::sha512(from_string("Hello world!"));
+    auto const sha512 = sha2::sha512(sha2::from_string64("Hello world!"));
     return 0;
 }
