@@ -13,6 +13,31 @@ C++ implementation of SHA-2:
 - Visual C++ 14.0 (Visual Studio 2015)
 - CLang 3.7
 
+## API
+
+```C++
+namespace sha2
+{
+    template<class T>
+    ::std::array<uint32_t, 8> sha256(T const &input);
+    
+    template<class T>
+    ::std::array<uint32_t, 7> sha224(T const &input);
+    
+    template<class T>
+    ::std::array<uint64_t, 6> sha384(T const &input);
+    
+    template<class T>
+    ::std::array<uint64_t, 8> sha512(T const &input);
+    
+    template<class T>
+    ::std::array<uint64_t, 4> sha512_256(T const &input);
+    
+    template<class T>
+    ::std::array<uint64_t, 4> sha512_224(T const &input);
+}
+```
+
 ## Download
 
 - [NuGet](https://www.nuget.org/packages/sha2/)
