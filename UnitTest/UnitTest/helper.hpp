@@ -65,6 +65,20 @@ public:
 	}
 };
 
+template<class T, T v, int size>
+class remainder_t
+{
+public:
+	static const T value = v << (sizeof(T) * CHAR_BIT - size);
+};
+
+template<class T, T v>
+class remainder_t<T, v, 0>
+{
+public:
+	static const T value = 0;
+};
+
 template<class T, T value, uint64_t size, int remainder_size_ = 0>
 class fill_t
 {
@@ -78,30 +92,34 @@ public:
 	}
 	static constexpr T remainder()
 	{
-		return value << (sizeof(T) * CHAR_BIT - remainder_size_);
+		return remainder_t<T, value, remainder_size_>::value;
 	}
 };
 
 template<class T>
 constexpr T fill(uint8_t value)
 {
-	return static_cast<T>(0x0101010101010101ull) * static_cast<T>(value);
+	return
+		static_cast<T>(
+			0x0101010101010101ull & ::std::numeric_limits<T>::max()) *
+		static_cast<T>(value);
 }
 
 template<class T, uint8_t value, uint64_t size>
-class nrange8_t :
-	public fill_t<T, fill<T>(value), size / sizeof(T), (size % sizeof(T)) * CHAR_BIT>
-{
-};
+using fill8_t = fill_t<
+	T,
+	fill<T>(value),
+	size / sizeof(T),
+	(size % sizeof(T)) * CHAR_BIT>;
 
 template<uint8_t value, uint64_t size>
-nrange8_t<uint32_t, value, size> nrange32()
+auto fill32()
 {
-	return nrange8_t<uint32_t, value, size>();
+	return fill8_t<uint32_t, value, size>();
 }
 
 template<uint8_t value, uint64_t size>
-nrange8_t<uint64_t, value, size> nrange64()
+auto fill64()
 {
-	return nrange8_t<uint64_t, value, size>();
+	return fill8_t<uint64_t, value, size>();
 }

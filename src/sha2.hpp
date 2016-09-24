@@ -562,7 +562,7 @@ namespace sha2
 		
 		auto const size = char_size / sizeof(V);
 		
-		auto const remainder_size = char_size % sizeof(V);
+		int const remainder_size = char_size % sizeof(V);
 		
 		auto const begin = reinterpret_cast<iterator_t>(char_begin);
 		auto const end = begin + size;
