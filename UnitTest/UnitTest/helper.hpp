@@ -65,13 +65,21 @@ public:
 	}
 };
 
-template<class T, T value, uint64_t size>
+template<class T, T value, uint64_t size, int remainder_size_ = 0>
 class fill_t
 {
 public:
 	typedef fill_iterator_t<T, value> iterator_t;
 	static iterator_t begin() { return iterator_t(0); }
 	static iterator_t end() { return iterator_t(size); }
+	static constexpr int remainder_size()
+	{
+		return remainder_size_;
+	}
+	static constexpr T remainder()
+	{
+		return value << (sizeof(T) * CHAR_BIT - remainder_size_);
+	}
 };
 
 template<class T>
@@ -82,17 +90,8 @@ constexpr T fill(uint8_t value)
 
 template<class T, uint8_t value, uint64_t size>
 class nrange8_t :
-	public fill_t<T, fill<T>(value), size / sizeof(T)>
+	public fill_t<T, fill<T>(value), size / sizeof(T), (size % sizeof(T)) * CHAR_BIT>
 {
-public:
-	static constexpr int remainder_size()
-	{
-		return (size % sizeof(T)) * CHAR_BIT;
-	}
-	static constexpr T remainder()
-	{
-		return fill<T>(value) << (sizeof(T) * CHAR_BIT - remainder_size());
-	}
 };
 
 template<uint8_t value, uint64_t size>

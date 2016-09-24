@@ -588,7 +588,8 @@ namespace sha2
 	template<size_t O, size_t S>
 	auto from_string(char const (&s)[S])
 	{
-		static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) == sizeof(uint8_t)");
+		static_assert(
+			sizeof(char) == sizeof(uint8_t), "sizeof(char) == sizeof(uint8_t)");
 		auto const begin = reinterpret_cast<uint8_t const *>(s);
 		return bit_sequence<uint_t<O>>(begin, begin + (S - 1));
 	}
