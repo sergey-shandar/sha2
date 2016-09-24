@@ -554,32 +554,42 @@ namespace sha2
 	}
 
 	template<class V>
-	inline auto from_string(char const *char_begin, char const *char_end)
+	inline auto bit_sequence(uint8_t const *char_begin, uint8_t const *char_end)
 	{
 		typedef V const *iterator_t;
+		
 		auto const char_size = char_end - char_begin;
+		
 		auto const size = char_size / sizeof(V);
+		
 		auto const remainder_size = char_size % sizeof(V);
+		
 		auto const begin = reinterpret_cast<iterator_t>(char_begin);
 		auto const end = begin + size;
-		char char_remainder[sizeof(V)] = {};
-		auto const remainder_begin = reinterpret_cast<char const *>(end);
-		auto const remainder_end = remainder_begin + remainder_size;
-		auto j = char_remainder;
-		for (auto i = remainder_begin; i != remainder_end; ++i, ++j)
+
+		V remainder = 0;
 		{
-			*j = *i;
-		}
+			auto const remainder_begin = reinterpret_cast<uint8_t const *>(end);
+			auto const remainder_end = remainder_begin + remainder_size;
+			int offset = sizeof(V) - 8;
+			for (auto i = remainder_begin; i != remainder_end; ++i, offset -= 8)
+			{
+				remainder |= static_cast<V>(*i) << offset;
+			}
+		}	
+
 		return bit_sequence(
 			byte_swap_iterator(begin),
 			byte_swap_iterator(end),
-			_detail::byte_swap(*reinterpret_cast<V const *>(char_remainder)),
+			remainder, 
 			remainder_size * CHAR_BIT);
 	}
 
 	template<size_t O, size_t S>
 	auto from_string(char const (&s)[S])
 	{
-		return from_string<uint_t<O>>(s, s + (S - 1));
+		static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) == sizeof(uint8_t)");
+		auto const begin = reinterpret_cast<uint8_t const *>(s);
+		return bit_sequence<uint_t<O>>(begin, begin + (S - 1));
 	}
 }

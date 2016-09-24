@@ -46,8 +46,14 @@ public:
 	typedef value_type *pointer;
 	typedef value_type &reference;
 	explicit fill_iterator_t(uint64_t index) : _index(index) {}
-	bool operator==(fill_iterator_t const &i) const { return _index == i._index; }
-	bool operator!=(fill_iterator_t const &i) const { return !operator==(i); }
+	bool operator==(fill_iterator_t const &i) const
+	{
+		return _index == i._index;
+	}
+	bool operator!=(fill_iterator_t const &i) const
+	{
+		return !operator==(i);
+	}
 	fill_iterator_t &operator++()
 	{
 		++_index;
@@ -79,12 +85,15 @@ class nrange8_t :
 	public fill_t<T, fill<T>(value), size / sizeof(T)>
 {
 public:
-	static constexpr int remainder_size() { return (size % sizeof(T)) * CHAR_BIT; }
-	static constexpr T remainder() { return fill<T>(value) << (sizeof(T) * CHAR_BIT - remainder_size()); }
+	static constexpr int remainder_size()
+	{
+		return (size % sizeof(T)) * CHAR_BIT;
+	}
+	static constexpr T remainder()
+	{
+		return fill<T>(value) << (sizeof(T) * CHAR_BIT - remainder_size());
+	}
 };
-
-//template<uint8_t value, uint64_t size>
-//using n_range_t = _detail::fill_t<uint8_t, value, size>;
 
 template<uint8_t value, uint64_t size>
 nrange8_t<uint32_t, value, size> nrange32()
