@@ -72,7 +72,7 @@ namespace UnitTest
 		TEST_METHOD(Sha256U)
 		{
 			Assert::AreEqual(
-				sha2::sha256(sha2::no_remainder(
+				sha2::sha256(sha2::bit_sequence(
 					::boost::make_iterator_range<uint32_t const *>(nullptr, nullptr))),
 				{
 					0xe3b0c442,

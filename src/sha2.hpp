@@ -487,41 +487,44 @@ namespace sha2
 	}
 
 	template<class I>
-	auto no_remainder(I const &begin, I const &end)
+	auto bit_sequence(I const &begin, I const &end)
 	{
 		return bit_sequence(begin, end, 0, 0);
 	}
 
 	template<class C>
-	auto no_remainder(C const &c)
+	auto bit_sequence(C const &c)
 	{
-		return no_remainder(::std::begin(c), ::std::end(c));
+		return bit_sequence(::std::begin(c), ::std::end(c));
 	}
 
-	constexpr uint32_t change_char_order(uint32_t v)
+	namespace _detail
 	{
-		return
-			 (v << 24)             |
-			((v <<  8) & 0xFF0000) |
-			((v >>  8) & 0x00FF00) |
-			((v >> 24) & 0x0000FF);
-	}
+		constexpr uint32_t byte_swap(uint32_t v)
+		{
+			return
+				(v << 24) |
+				((v << 8) & 0xFF0000) |
+				((v >> 8) & 0x00FF00) |
+				((v >> 24) & 0x0000FF);
+		}
 
-	constexpr uint64_t change_char_order(uint64_t v)
-	{
-		return
-			 (v << 56)                        |
-			((v << 40) & 0xFF000000000000ull) |
-			((v << 24) & 0x00FF0000000000ull) |
-			((v <<  8) & 0x0000FF00000000ull) |
-			((v >>  8) & 0x000000FF000000ull) |
-			((v >> 24) & 0x00000000FF0000ull) |
-			((v << 40) & 0x0000000000FF00ull) |
-			((v >> 56) & 0x000000000000FFull);
+		constexpr uint64_t byte_swap(uint64_t v)
+		{
+			return
+				(v << 56) |
+				((v << 40) & 0xFF000000000000ull) |
+				((v << 24) & 0x00FF0000000000ull) |
+				((v << 8) & 0x0000FF00000000ull) |
+				((v >> 8) & 0x000000FF000000ull) |
+				((v >> 24) & 0x00000000FF0000ull) |
+				((v << 40) & 0x0000000000FF00ull) |
+				((v >> 56) & 0x000000000000FFull);
+		}
 	}
 
 	template<class V>
-	class swap_iterator_t
+	class byte_swap_iterator_t
 	{
 	private:
 		V const *_i;
@@ -531,17 +534,23 @@ namespace sha2
 		typedef int64_t difference_type;
 		typedef value_type *pointer;
 		typedef value_type &reference;
-		explicit swap_iterator_t(V const *i) : _i(i) {}
-		V operator*() const { return change_char_order(*_i); }
-		difference_type operator-(swap_iterator_t const x) const { return _i - x._i; }
-		bool operator!=(swap_iterator_t const x) const { return _i != x._i; }
-		swap_iterator_t &operator++() { ++_i; return *this; }
+		explicit byte_swap_iterator_t(V const *i) : _i(i) {}
+		V operator*() const { return _detail::byte_swap(*_i); }
+		difference_type operator-(byte_swap_iterator_t const x) const 
+		{
+			return _i - x._i;
+		}
+		bool operator!=(byte_swap_iterator_t const x) const
+		{
+			return _i != x._i;
+		}
+		byte_swap_iterator_t &operator++() { ++_i; return *this; }
 	};
 
 	template<class V>
-	auto swap_iterator(V const *i)
+	auto byte_swap_iterator(V const *i)
 	{
-		return swap_iterator_t<V>(i);
+		return byte_swap_iterator_t<V>(i);
 	}
 
 	template<class V>
@@ -562,9 +571,9 @@ namespace sha2
 			*j = *i;
 		}
 		return bit_sequence(
-			swap_iterator(begin),
-			swap_iterator(end),
-			change_char_order(*reinterpret_cast<V const *>(char_remainder)),
+			byte_swap_iterator(begin),
+			byte_swap_iterator(end),
+			_detail::byte_swap(*reinterpret_cast<V const *>(char_remainder)),
 			remainder_size * CHAR_BIT);
 	}
 
