@@ -96,30 +96,22 @@ public:
 	}
 };
 
-template<class T>
-constexpr T fill(uint8_t value)
+template<size_t size>
+constexpr sha2::uint_t<size> fill(uint8_t value)
 {
+	typedef sha2::uint_t<size> output_t;
 	return
-		static_cast<T>(
-			0x0101010101010101ull & ::std::numeric_limits<T>::max()) *
-		static_cast<T>(value);
+		static_cast<output_t>(
+			0x0101010101010101ull & ::std::numeric_limits<output_t>::max()) *
+		static_cast<output_t>(value);
 }
 
-template<class T, uint8_t value, uint64_t size>
-using fill8_t = fill_t<
-	T,
-	fill<T>(value),
-	size / sizeof(T),
-	(size % sizeof(T)) * CHAR_BIT>;
-
-template<uint8_t value, uint64_t size>
-auto fill32()
+template<size_t output_size, uint8_t value, uint64_t size>
+constexpr auto fill8()
 {
-	return fill8_t<uint32_t, value, size>();
-}
-
-template<uint8_t value, uint64_t size>
-auto fill64()
-{
-	return fill8_t<uint64_t, value, size>();
+	return fill_t<
+		sha2::uint_t<output_size>,
+		fill<output_size>(value),
+		size / output_size,
+		size % output_size>();
 }
