@@ -33,7 +33,7 @@ namespace UnitTest
 		TEST_METHOD(Sha224)
 		{
             Assert::AreEqual(
-                sha2::sha224(sha2::from_string32("")),
+                sha2::sha224(sha2::from_string<32>("")),
                 { 
                     0xd14a028c,
                     0x2a3a2bc9,
@@ -44,7 +44,7 @@ namespace UnitTest
                     0xc5b3e42f
                 });
             Assert::AreEqual(
-                sha2::sha224(sha2::from_string32(
+                sha2::sha224(sha2::from_string<32>(
                     "The quick brown fox jumps over the lazy dog")),
                 {
                     0x730e109b,
@@ -56,7 +56,7 @@ namespace UnitTest
                     0xad911525
                 });
             Assert::AreEqual(
-                sha2::sha224(sha2::from_string32(
+                sha2::sha224(sha2::from_string<32>(
                     "The quick brown fox jumps over the lazy dog.")),
                 {
                     0x619cba8e,
@@ -85,7 +85,7 @@ namespace UnitTest
 					0x7852b855
 				});
 			Assert::AreEqual(
-				sha2::sha256(sha2::from_string32("")),
+				sha2::sha256(sha2::from_string<32>("")),
 				{
 					0xe3b0c442,
 					0x98fc1c14,
@@ -97,7 +97,7 @@ namespace UnitTest
 					0x7852b855
 				});
 			Assert::AreEqual(
-				sha2::sha256(sha2::from_string32(
+				sha2::sha256(sha2::from_string<32>(
 					"The quick brown fox jumps over the lazy dog.")),
 					{
 						0xef537f25,
@@ -110,7 +110,7 @@ namespace UnitTest
 						0x8635fb6c
 					});
 			//                           0123012301230123012301230123012301230123012
-			auto const x = sha2::from_string32("The quick brown fox jumps over the lazy dog");
+			auto const x = sha2::from_string<32>("The quick brown fox jumps over the lazy dog");
 			Assert::AreEqual(x.end() - x.begin(), 10LL);
 			Assert::AreEqual(x.remainder_size(), 24);
 			char const m[] = "\0god";
@@ -134,7 +134,7 @@ namespace UnitTest
         TEST_METHOD(Sha512)
         {
             Assert::AreEqual(
-                sha2::sha512(sha2::from_string64("")),
+                sha2::sha512(sha2::from_string<64>("")),
                 {
                     0xcf83e1357eefb8bd,
                     0xf1542850d66d8007,
@@ -150,7 +150,7 @@ namespace UnitTest
         TEST_METHOD(Sha384)
         {
             Assert::AreEqual(
-                sha2::sha384(sha2::from_string64("")),
+                sha2::sha384(sha2::from_string<64>("")),
                 {
                     0x38b060a751ac9638,
                     0x4cd9327eb1b1e36a,
@@ -164,7 +164,7 @@ namespace UnitTest
         TEST_METHOD(Sha512t256)
         {
             Assert::AreEqual(
-                sha2::sha512_256(sha2::from_string64("")),
+                sha2::sha512_256(sha2::from_string<64>("")),
                 {
                     0xc672b8d1ef56ed28,
                     0xab87c3622c511406,
@@ -176,7 +176,7 @@ namespace UnitTest
         TEST_METHOD(Sha512t224)
         {
             Assert::AreEqual(
-                sha2::sha512_224(sha2::from_string64("")),
+                sha2::sha512_224(sha2::from_string<64>("")),
                 {
                     0x6ed0dd02806fa89e,
                     0x25de060c19d3ac86,

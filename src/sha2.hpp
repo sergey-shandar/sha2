@@ -6,6 +6,29 @@ namespace sha2
 {
 	namespace _detail
 	{
+		template<size_t S>
+		class _uint_t;
+
+		template<>
+		class _uint_t<32>
+		{
+		public:
+			typedef uint32_t t;
+		};
+
+		template<>
+		class _uint_t<64>
+		{
+		public:
+			typedef uint64_t t;
+		};
+	}
+
+	template<size_t S>
+	using uint_t = typename _detail::_uint_t<S>::t;
+
+	namespace _detail
+	{
 		template<class T>
 		constexpr T right_rotate(T v, int n)
 		{
@@ -498,7 +521,7 @@ namespace sha2
 	}
 
 	template<class V>
-	class iterator_t
+	class swap_iterator_t
 	{
 	private:
 		V const *_i;
@@ -508,17 +531,17 @@ namespace sha2
 		typedef int64_t difference_type;
 		typedef value_type *pointer;
 		typedef value_type &reference;
-		explicit iterator_t(V const *i) : _i(i) {}
+		explicit swap_iterator_t(V const *i) : _i(i) {}
 		V operator*() const { return change_char_order(*_i); }
-		difference_type operator-(iterator_t const x) const { return _i - x._i; }
-		bool operator!=(iterator_t const x) const { return _i != x._i; }
-		iterator_t &operator++() { ++_i; return *this; }
+		difference_type operator-(swap_iterator_t const x) const { return _i - x._i; }
+		bool operator!=(swap_iterator_t const x) const { return _i != x._i; }
+		swap_iterator_t &operator++() { ++_i; return *this; }
 	};
 
 	template<class V>
-	auto iterator(V const *i)
+	auto swap_iterator(V const *i)
 	{
-		return iterator_t<V>(i);
+		return swap_iterator_t<V>(i);
 	}
 
 	template<class V>
@@ -539,27 +562,15 @@ namespace sha2
 			*j = *i;
 		}
 		return bit_sequence(
-			iterator(begin),
-			iterator(end),
+			swap_iterator(begin),
+			swap_iterator(end),
 			change_char_order(*reinterpret_cast<V const *>(char_remainder)),
 			remainder_size * CHAR_BIT);
 	}
 
-	template<class V, size_t S>
+	template<size_t O, size_t S>
 	auto from_string(char const (&s)[S])
 	{
-		return from_string<V>(s, s + (S - 1));
-	}
-
-	template<size_t S>
-	auto from_string32(char const (&s)[S])
-	{
-		return from_string<uint32_t>(s);
-	}
-
-	template<size_t S>
-	auto from_string64(char const (&s)[S])
-	{
-		return from_string<uint64_t>(s);
+		return from_string<uint_t<O>>(s, s + (S - 1));
 	}
 }
