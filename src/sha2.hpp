@@ -571,7 +571,7 @@ namespace sha2
 		{
 			auto const remainder_begin = reinterpret_cast<uint8_t const *>(end);
 			auto const remainder_end = remainder_begin + remainder_size;
-			int offset = sizeof(V) - 8;
+			int offset = (sizeof(V) - 1) * 8;
 			for (auto i = remainder_begin; i != remainder_end; ++i, offset -= 8)
 			{
 				remainder |= static_cast<V>(*i) << offset;
