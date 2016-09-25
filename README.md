@@ -30,11 +30,20 @@ template<size_t ValueSize>
 class BitSequenceConcept
 {
 public:
+    
     typedef uint_t<ValueSize> value_type;
+    
     typedef IteratorConcept<value_type const> const_iterator;
+    
     const_iterator begin() const;
+    
     const_iterator end() const;
+
     value_type remainder() const;
+
+    /**
+     * A remainder size in bits. 
+     */
     size_t remainder_size() const;
 };
 ```
