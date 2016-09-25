@@ -1,5 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3inr5ejtnldgc9b0/branch/master?svg=true)](https://ci.appveyor.com/project/sergey-shandar/sha2/branch/master)
 
+[NuGet](https://www.nuget.org/packages/sha2/).
+
 C++ implementation of SHA-2:
 - SHA-224
 - SHA-256
@@ -93,9 +95,36 @@ namespace sha2
 }
 ```
 
-## Download
+### Bit Sequence
 
-- [NuGet](https://www.nuget.org/packages/sha2/)
+```C++
+namespace sha2
+{
+    template<class Iterator>
+    class bit_sequence_t
+    {
+    public:
+        typedef typename ::std::iterator_traits<I>::value_type value_type;
+        bit_sequence_t(Iterator begin, Iterator end, value_type remainder, size_t remainder_size);
+        Iterator begin() const;
+        Iterator end() const;
+        value_type remainder() const;
+        size_t remainder_size() const;
+    };
+    
+	template<class I, class V>
+	bit_sequence_t<I> bit_sequence(I begin, I end, V remainder, size_t remainder_size);
+
+	template<class I>
+	bit_sequence_t<I> bit_sequence(I begin, I end);
+
+	template<class C>
+	bit_sequence_t<typename C::const_iterator> bit_sequence(C const &c);
+    
+    template<size_t ValueBitSize>
+	bit_sequence_t<uint_t<ValueBitSize> const *> bit_sequence(uint8_t const *begin, uint8_t const *end);
+}
+```
 
 ## Example
 
