@@ -15,6 +15,21 @@ C++ implementation of SHA-2:
 
 ## API
 
+### Bit Sequence Concept
+
+```C++
+class BitSequence
+{
+public:
+    Iterator begin() const;
+    Iterator end() const;
+    ValueType remainder() const;
+    size_t remainder_size() const;
+}
+```
+
+### SHA2 Functions
+
 ```C++
 namespace sha2
 {
