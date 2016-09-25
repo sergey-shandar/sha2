@@ -112,17 +112,17 @@ namespace sha2
         size_t remainder_size() const;
     };
     
-	template<class I, class V>
-	bit_sequence_t<I> bit_sequence(I begin, I end, V remainder, size_t remainder_size);
+    template<class I, class V>
+    bit_sequence_t<I> bit_sequence(I begin, I end, V remainder, size_t remainder_size);
 
-	template<class I>
-	bit_sequence_t<I> bit_sequence(I begin, I end);
+    template<class I>
+    bit_sequence_t<I> bit_sequence(I begin, I end);
 
-	template<class C>
-	bit_sequence_t<typename C::const_iterator> bit_sequence(C const &c);
+    template<class C>
+    bit_sequence_t<typename C::const_iterator> bit_sequence(C const &c);
     
     template<size_t ValueBitSize>
-	bit_sequence_t<uint_t<ValueBitSize> const *> bit_sequence(uint8_t const *begin, uint8_t const *end);
+    bit_sequence_t<uint_t<ValueBitSize> const *> bit_sequence(uint8_t const *begin, uint8_t const *end);
 }
 ```
 
