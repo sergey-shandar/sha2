@@ -12,7 +12,7 @@ int nCLangLibExample=0;
 int fnCLangLibExample(void)
 {
     uint64_t const x[] = { 0x48 };
-    auto const r = sha2::sha512(sha2::no_remainder(x));
+    auto const r = sha2::sha512(sha2::bit_sequence(x));
     return r[0];
 }
 

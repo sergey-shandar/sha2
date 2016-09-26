@@ -6,6 +6,29 @@ namespace sha2
 {
 	namespace _detail
 	{
+		template<size_t S>
+		class _uint_t;
+
+		template<>
+		class _uint_t<32>
+		{
+		public:
+			typedef uint32_t t;
+		};
+
+		template<>
+		class _uint_t<64>
+		{
+		public:
+			typedef uint64_t t;
+		};
+	}
+
+	template<size_t S>
+	using uint_t = typename _detail::_uint_t<S>::t;
+
+	namespace _detail
+	{
 		template<class T>
 		constexpr T right_rotate(T v, int n)
 		{
@@ -259,8 +282,11 @@ namespace sha2
 		}
 	}
 
+	template<size_t BitSize, size_t Size>
+	using result_t = ::std::array<uint_t<BitSize>, Size>;
+
     // 256 bits = 32 bytes = 16 uint16 = 8 uint32 = 4 uint64
-    typedef ::std::array<uint32_t, 8> sha256_t;
+    typedef result_t<32, 8> sha256_t;
 
     template<class Input>
     sha256_t sha256(Input const &input)
@@ -281,7 +307,7 @@ namespace sha2
             input);
     }
 
-    typedef ::std::array<uint32_t, 7> sha224_t;
+    typedef result_t<32, 7> sha224_t;
 
     template<class Input>
     sha224_t sha224(Input const &input)
@@ -317,7 +343,7 @@ namespace sha2
         };
     }
 
-    typedef ::std::array<uint64_t, 8> sha512_t;
+    typedef result_t<64, 8> sha512_t;
 
     template<class Input>
     sha512_t sha512(Input const &input)
@@ -338,7 +364,7 @@ namespace sha2
             input);
     }
 
-    typedef ::std::array<uint64_t, 6> sha384_t;
+    typedef result_t<64, 6> sha384_t;
 
     template<class Input>
     sha384_t sha384(Input const &input)
@@ -370,7 +396,7 @@ namespace sha2
             };
     }
 
-    typedef ::std::array<uint64_t, 4> sha512_256_t;
+    typedef result_t<64, 4> sha512_256_t;
 
     template<class Input>
     sha512_256_t sha512_256(Input const &input)
@@ -439,9 +465,9 @@ namespace sha2
 		value_type const _remainder;
 		int const _remainder_size;
 	public:
-		bit_sequence_t(
-			I const &begin,
-			I const &end,
+		constexpr bit_sequence_t(
+			I begin,
+			I end,
 			value_type remainder,
 			int remainder_size) :
 			_begin(begin),
@@ -450,55 +476,58 @@ namespace sha2
 			_remainder_size(remainder_size)
 		{
 		}
-		I begin() const { return _begin; }
-		I end() const { return _end; }
-		value_type remainder() const { return _remainder; }
-		int remainder_size() const { return _remainder_size; }
+		constexpr I begin() const { return _begin; }
+		constexpr I end() const { return _end; }
+		constexpr value_type remainder() const { return _remainder; }
+		constexpr int remainder_size() const { return _remainder_size; }
 	};
 
 	template<class I, class V>
-	auto bit_sequence(
+	constexpr auto bit_sequence(
 		I const &begin, I const &end, V remainder, int remainder_size)
 	{
 		return bit_sequence_t<I>(begin, end, remainder, remainder_size);
 	}
 
 	template<class I>
-	auto no_remainder(I const &begin, I const &end)
+	constexpr auto bit_sequence(I const &begin, I const &end)
 	{
 		return bit_sequence(begin, end, 0, 0);
 	}
 
 	template<class C>
-	auto no_remainder(C const &c)
+	constexpr auto bit_sequence(C const &c)
 	{
-		return no_remainder(::std::begin(c), ::std::end(c));
+		return bit_sequence(::std::begin(c), ::std::end(c));
 	}
 
-	constexpr uint32_t change_char_order(uint32_t v)
+	namespace _detail
 	{
-		return
-			 (v << 24)             |
-			((v <<  8) & 0xFF0000) |
-			((v >>  8) & 0x00FF00) |
-			((v >> 24) & 0x0000FF);
-	}
+		constexpr uint32_t byte_swap(uint32_t v)
+		{
+			return
+				(v << 24) |
+				((v << 8) & 0xFF0000) |
+				((v >> 8) & 0x00FF00) |
+				((v >> 24) & 0x0000FF);
+		}
 
-	constexpr uint64_t change_char_order(uint64_t v)
-	{
-		return
-			 (v << 56)                        |
-			((v << 40) & 0xFF000000000000ull) |
-			((v << 24) & 0x00FF0000000000ull) |
-			((v <<  8) & 0x0000FF00000000ull) |
-			((v >>  8) & 0x000000FF000000ull) |
-			((v >> 24) & 0x00000000FF0000ull) |
-			((v << 40) & 0x0000000000FF00ull) |
-			((v >> 56) & 0x000000000000FFull);
+		constexpr uint64_t byte_swap(uint64_t v)
+		{
+			return
+				(v << 56) |
+				((v << 40) & 0xFF000000000000ull) |
+				((v << 24) & 0x00FF0000000000ull) |
+				((v << 8) & 0x0000FF00000000ull) |
+				((v >> 8) & 0x000000FF000000ull) |
+				((v >> 24) & 0x00000000FF0000ull) |
+				((v << 40) & 0x0000000000FF00ull) |
+				((v >> 56) & 0x000000000000FFull);
+		}
 	}
 
 	template<class V>
-	class iterator_t
+	class byte_swap_iterator_t
 	{
 	private:
 		V const *_i;
@@ -508,58 +537,157 @@ namespace sha2
 		typedef int64_t difference_type;
 		typedef value_type *pointer;
 		typedef value_type &reference;
-		explicit iterator_t(V const *i) : _i(i) {}
-		V operator*() const { return change_char_order(*_i); }
-		difference_type operator-(iterator_t const x) const { return _i - x._i; }
-		bool operator!=(iterator_t const x) const { return _i != x._i; }
-		iterator_t &operator++() { ++_i; return *this; }
+		constexpr explicit byte_swap_iterator_t(V const *i) : _i(i) {}
+		constexpr V operator*() const { return _detail::byte_swap(*_i); }
+		constexpr difference_type operator-(byte_swap_iterator_t const x) const 
+		{
+			return _i - x._i;
+		}
+		constexpr bool operator!=(byte_swap_iterator_t const x) const
+		{
+			return _i != x._i;
+		}
+		byte_swap_iterator_t &operator++() 
+		{
+			++_i;
+			return *this;
+		}
 	};
 
 	template<class V>
-	auto iterator(V const *i)
+	constexpr auto byte_swap_iterator(V const *i)
 	{
-		return iterator_t<V>(i);
+		return byte_swap_iterator_t<V>(i);
 	}
 
-	template<class V>
-	inline auto from_string(char const *char_begin, char const *char_end)
+	template<size_t ValueBitSize>
+	auto bit_sequence(uint8_t const *char_begin, uint8_t const *char_end)
 	{
-		typedef V const *iterator_t;
+		typedef uint_t<ValueBitSize> value_type;
+
+		typedef value_type const *iterator_t;
+		
+		static size_t const value_byte_size = ValueBitSize / 8;
+
 		auto const char_size = char_end - char_begin;
-		auto const size = char_size / sizeof(V);
-		auto const remainder_size = char_size % sizeof(V);
+		
+		auto const size = char_size / value_byte_size;
+		
+		int const remainder_size = char_size % value_byte_size;
+		
 		auto const begin = reinterpret_cast<iterator_t>(char_begin);
 		auto const end = begin + size;
-		char char_remainder[sizeof(V)] = {};
-		auto const remainder_begin = reinterpret_cast<char const *>(end);
-		auto const remainder_end = remainder_begin + remainder_size;
-		auto j = char_remainder;
-		for (auto i = remainder_begin; i != remainder_end; ++i, ++j)
+
+		value_type remainder = 0;
 		{
-			*j = *i;
-		}
+			auto const remainder_begin = reinterpret_cast<uint8_t const *>(end);
+			auto const remainder_end = remainder_begin + remainder_size;
+			int offset = ValueBitSize - 8;
+			for (auto i = remainder_begin; i != remainder_end; ++i, offset -= 8)
+			{
+				remainder |= static_cast<value_type>(*i) << offset;
+			}
+		}	
+
 		return bit_sequence(
-			iterator(begin),
-			iterator(end),
-			change_char_order(*reinterpret_cast<V const *>(char_remainder)),
-			remainder_size * CHAR_BIT);
+			byte_swap_iterator(begin),
+			byte_swap_iterator(end),
+			remainder,
+			remainder_size * 8);
 	}
 
-	template<class V, size_t S>
+	template<size_t O, size_t S>
 	auto from_string(char const (&s)[S])
 	{
-		return from_string<V>(s, s + (S - 1));
+		static_assert(
+			sizeof(char) == sizeof(uint8_t), "sizeof(char) == sizeof(uint8_t)");
+		auto const begin = reinterpret_cast<uint8_t const *>(s);
+		return bit_sequence<O>(begin, begin + (S - 1));
 	}
 
-	template<size_t S>
-	auto from_string32(char const (&s)[S])
+	namespace _detail
 	{
-		return from_string<uint32_t>(s);
+		template<class T, T value>
+		class fill_iterator_t
+		{
+		private:
+			static T const _value = value;
+			uint64_t _index;
+		public:
+			typedef ::std::random_access_iterator_tag iterator_category;
+			typedef T const value_type;
+			typedef int64_t difference_type;
+			typedef value_type *pointer;
+			typedef value_type &reference;
+			constexpr explicit fill_iterator_t(uint64_t index) : _index(index) {}
+			constexpr bool operator==(fill_iterator_t const &i) const
+			{
+				return _index == i._index;
+			}
+			constexpr bool operator!=(fill_iterator_t const &i) const
+			{
+				return !operator==(i);
+			}
+			fill_iterator_t &operator++()
+			{
+				++_index;
+				return *this;
+			}
+			constexpr reference operator *() const
+			{
+				return _value;
+			}
+		};
+
+		template<class T, T v, int size>
+		class remainder_t
+		{
+		public:
+			static const T value = v << (sizeof(T) * CHAR_BIT - size);
+		};
+
+		template<class T, T v>
+		class remainder_t<T, v, 0>
+		{
+		public:
+			static const T value = 0;
+		};
+
+		template<size_t size>
+		constexpr sha2::uint_t<size> fill(uint8_t value)
+		{
+			typedef sha2::uint_t<size> output_t;
+			return
+				static_cast<output_t>(
+					0x0101010101010101ull & ::std::numeric_limits<output_t>::max()) *
+				static_cast<output_t>(value);
+		}
 	}
 
-	template<size_t S>
-	auto from_string64(char const (&s)[S])
-	{
-		return from_string<uint64_t>(s);
-	}
+    template<class T, T value, uint64_t size, int remainder_size_ = 0>
+    class fill_t
+    {
+    public:
+        typedef _detail::fill_iterator_t<T, value> const_iterator;
+        static constexpr const_iterator begin() { return const_iterator(0); }
+        static constexpr const_iterator end() { return const_iterator(size); }
+        static constexpr int remainder_size()
+        {
+            return remainder_size_;
+        }
+        static constexpr T remainder()
+        {
+            return _detail::remainder_t<T, value, remainder_size_>::value;
+        }
+    };
+
+    template<size_t output_size, uint8_t value, uint64_t size>
+    constexpr auto fill8()
+    {
+        return fill_t<
+            sha2::uint_t<output_size>,
+            _detail::fill<output_size>(value),
+            size / output_size,
+            size % output_size>();
+    }
 }
