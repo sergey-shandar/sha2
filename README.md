@@ -1,6 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3inr5ejtnldgc9b0/branch/master?svg=true)](https://ci.appveyor.com/project/sergey-shandar/sha2/branch/master)
 
-[NuGet](https://www.nuget.org/packages/sha2/).
+[![NuGet version](https://badge.fury.io/nu/sha2.svg)](https://badge.fury.io/nu/sha2).
 
 C++ implementation of SHA-2:
 - SHA-224
