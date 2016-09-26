@@ -100,6 +100,9 @@ namespace sha2
 ```C++
 namespace sha2
 {
+    /**
+     * Implements BitSequence<sizeof(typename Iterator::value_type) * CHAR_BIT>.
+     */
     template<class Iterator>
     class bit_sequence_t
     {
@@ -123,6 +126,33 @@ namespace sha2
     
     template<size_t ValueBitSize>
     bit_sequence_t<uint_t<ValueBitSize> const *> bit_sequence(uint8_t const *begin, uint8_t const *end);
+}
+```
+
+### Fill Bit Sequence With Value
+
+```C++
+namespace sha2
+{
+    /**
+     * Implements BitSequence<sizeof(T) * CHAR_BIT>.
+     */
+    template<class T, T value, uint64_t size, size_t remainder_size_ = 0>
+    class fill_t
+    {
+    public:
+        typedef ... const_iterator;
+        static const_iterator begin();
+        static const_iterator end();
+        static size_t remainder_size();
+        static T remainder();
+    };
+
+    /**
+     * Returns BitSequence<output_size>.
+     */
+    template<size_t output_size, uint8_t value, uint64_t size>
+    auto fill8();
 }
 ```
 
