@@ -21,14 +21,23 @@ namespace UnitTest
         {
             auto const x = sha2::sha256(nrange32<0, 0x800000000>());
         }
+        */
 
+        /*
 		// 32 GB
 		// new: ~ 3 min
 		TEST_METHOD(Sha512Length)
 		{
-			auto const x = sha2::sha512(nrange64<0, 0x800000000>());
+            Assert::AreEqual(
+                sha2::sha512_256(sha2::fill8<64, 0, 0x800000000ull * 8>()),
+                {
+                    0x309cd2dd4484d3e1,
+                    0x02c54254cc3a26a2,
+                    0x378480115d27168f,
+                    0x36cea299bfce6765,
+                });
 		}
-		*/
+        */
 
 		TEST_METHOD(Sha224)
 		{
