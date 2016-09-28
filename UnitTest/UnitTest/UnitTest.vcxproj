@@ -100,7 +100,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)packages\NuGet.CommandLine.3.3.0\tools\NuGet.exe pack $(SolutionDir)..\src\sha2.nuspec</Command>
+      <Command>$(SolutionDir)packages\NuGet.CommandLine.3.4.3\tools\NuGet.exe pack $(SolutionDir)..\src\sha2.nuspec</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,7 +140,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)packages\NuGet.CommandLine.3.3.0\tools\NuGet.exe pack $(SolutionDir)..\src\sha2.nuspec</Command>
+      <Command>$(SolutionDir)packages\NuGet.CommandLine.3.4.3\tools\NuGet.exe pack $(SolutionDir)..\src\sha2.nuspec</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
