@@ -376,7 +376,7 @@ namespace UnitTest
                 sha2::sha512(sha2::fill8<64, 0x42, 0x6000003eull * 8>()),
                 {
                     0xfd05e13eb771f051, 0x90bd97d62647157e, 0xa8f1f6949a52bb6d, 0xaaedbad5f578ec59,
-                    0xb1b8d6c4a7ecb2fe, 0xca6892b4dc138771, 0x670a0f3bd577eea3, 0x26aed40ab7dd58b1
+                    0xb1b8d6c4a7ecb2fe, 0xca6892b4dc138771, 0x670a0f3bd577eea3, 0x26aed40ab7dd58b1,
                 });
         }
     };

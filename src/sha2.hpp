@@ -135,11 +135,13 @@ namespace sha2
 
 			typedef parameters_t<T> p_t;
 
-			::std::array<T, 8> result;
+            typedef ::std::array<T, 8> result_t;
+
+			result_t result;
 
 			T w[p_t::size];
 
-			state_t(::std::array<T, 8> const &initial) : result(initial) {}
+			state_t(result_t const &initial) : result(initial) {}
 
 			void process()
 			{
@@ -280,6 +282,90 @@ namespace sha2
 
 			return state.result;
 		}
+
+        static ::std::array<uint32_t, 8> const i256 =
+        {
+            {
+                0x6a09e667,
+                0xbb67ae85,
+                0x3c6ef372,
+                0xa54ff53a,
+                0x510e527f,
+                0x9b05688c,
+                0x1f83d9ab,
+                0x5be0cd19,
+            }
+        };
+
+        static ::std::array<uint32_t, 8> const i224 =
+        {
+            {
+                0xc1059ed8,
+                0x367cd507,
+                0x3070dd17,
+                0xf70e5939,
+                0xffc00b31,
+                0x68581511,
+                0x64f98fa7,
+                0xbefa4fa4,
+            }
+        };
+
+        static ::std::array<uint64_t, 8> const i512 =
+        {
+            {
+                0x6a09e667f3bcc908,
+                0xbb67ae8584caa73b,
+                0x3c6ef372fe94f82b,
+                0xa54ff53a5f1d36f1,
+                0x510e527fade682d1,
+                0x9b05688c2b3e6c1f,
+                0x1f83d9abfb41bd6b,
+                0x5be0cd19137e2179,
+            }
+        };
+
+        static ::std::array<uint64_t, 8> const i384 =
+        {
+            {
+                0xcbbb9d5dc1059ed8,
+                0x629a292a367cd507,
+                0x9159015a3070dd17,
+                0x152fecd8f70e5939,
+                0x67332667ffc00b31,
+                0x8eb44a8768581511,
+                0xdb0c2e0d64f98fa7,
+                0x47b5481dbefa4fa4,
+            }
+        };
+
+        static ::std::array<uint64_t, 8> const i512_256 =
+        {
+            {
+                0x22312194FC2BF72C,
+                0x9F555FA3C84C64C2,
+                0x2393B86B6F53B151,
+                0x963877195940EABD,
+                0x96283EE2A88EFFE3,
+                0xBE5E1E2553863992,
+                0x2B0199FC2C85B8AA,
+                0x0EB72DDC81C52CA2,
+            }
+        };
+
+        static ::std::array<uint64_t, 8> const i512_244 =
+        {
+            {
+                0x8C3D37C819544DA2,
+                0x73E1996689DCD4D6,
+                0x1DFAB7AE32FF9C82,
+                0x679DD514582F9FCF,
+                0x0F6D2B697BD44DA8,
+                0x77E36F7304C48942,
+                0x3F9D85A86A1D36C8,
+                0x1112E6AD91D692A1,
+            }
+        };
 	}
 
 	template<size_t BitSize, size_t Size>
@@ -291,20 +377,7 @@ namespace sha2
     template<class Input>
     sha256_t sha256(Input const &input)
     {
-        return _detail::process<uint32_t>(
-            {
-                {
-                    0x6a09e667,
-                    0xbb67ae85,
-                    0x3c6ef372,
-                    0xa54ff53a,
-                    0x510e527f,
-                    0x9b05688c,
-                    0x1f83d9ab,
-                    0x5be0cd19,
-                }
-            },
-            input);
+        return _detail::process(_detail::i256, input);
     }
 
     typedef result_t<32, 7> sha224_t;
@@ -315,20 +388,7 @@ namespace sha2
         // SHA - 224 initial hash values(in big endian) :
         // (The second 32 bits of the fractional parts of the square roots of 
         // the 9th through 16th primes 23..53)
-        auto const result = _detail::process<uint32_t>(
-            {
-                {
-                    0xc1059ed8,
-                    0x367cd507,
-                    0x3070dd17,
-                    0xf70e5939,
-                    0xffc00b31,
-                    0x68581511,
-                    0x64f98fa7,
-                    0xbefa4fa4,
-                }
-            },
-            input);
+        auto const result = _detail::process(_detail::i224, input);
         return
         {
             {
@@ -348,20 +408,7 @@ namespace sha2
     template<class Input>
     sha512_t sha512(Input const &input)
     {
-        return _detail::process<uint64_t>(
-            {
-                {
-                    0x6a09e667f3bcc908,
-                    0xbb67ae8584caa73b,
-                    0x3c6ef372fe94f82b,
-                    0xa54ff53a5f1d36f1,
-                    0x510e527fade682d1,
-                    0x9b05688c2b3e6c1f,
-                    0x1f83d9abfb41bd6b,
-                    0x5be0cd19137e2179,
-                }
-            },
-            input);
+        return _detail::process(_detail::i512, input);
     }
 
     typedef result_t<64, 6> sha384_t;
@@ -369,20 +416,7 @@ namespace sha2
     template<class Input>
     sha384_t sha384(Input const &input)
     {
-        auto const result = _detail::process<uint64_t>(
-            {
-                {
-                    0xcbbb9d5dc1059ed8,
-                    0x629a292a367cd507,
-                    0x9159015a3070dd17,
-                    0x152fecd8f70e5939,
-                    0x67332667ffc00b31,
-                    0x8eb44a8768581511,
-                    0xdb0c2e0d64f98fa7,
-                    0x47b5481dbefa4fa4,
-                }
-            },
-            input);
+        auto const result = _detail::process(_detail::i384, input);
         return 
             {
                 {
@@ -401,20 +435,7 @@ namespace sha2
     template<class Input>
     sha512_256_t sha512_256(Input const &input)
     {
-        auto const result = _detail::process<uint64_t>(
-            {
-                {
-                    0x22312194FC2BF72C,
-                    0x9F555FA3C84C64C2,
-                    0x2393B86B6F53B151,
-                    0x963877195940EABD,
-                    0x96283EE2A88EFFE3,
-                    0xBE5E1E2553863992,
-                    0x2B0199FC2C85B8AA,
-                    0x0EB72DDC81C52CA2
-                }
-            },
-            input);
+        auto const result = _detail::process<uint64_t>(_detail::i512_256, input);
         return
             {
                 {
@@ -429,20 +450,7 @@ namespace sha2
     template<class Input>
     sha512_256_t sha512_224(Input const input)
     {
-        auto const result = _detail::process<uint64_t>(
-            {
-                {
-                    0x8C3D37C819544DA2,
-                    0x73E1996689DCD4D6,
-                    0x1DFAB7AE32FF9C82,
-                    0x679DD514582F9FCF,
-                    0x0F6D2B697BD44DA8,
-                    0x77E36F7304C48942,
-                    0x3F9D85A86A1D36C8,
-                    0x1112E6AD91D692A1,
-                }
-            },
-            input);
+        auto const result = _detail::process<uint64_t>(_detail::i512_244, input);
         return
             {
                 {
@@ -506,20 +514,20 @@ namespace sha2
 		constexpr uint32_t byte_swap(uint32_t v)
 		{
 			return
-				(v << 24) |
-				((v << 8) & 0xFF0000) |
-				((v >> 8) & 0x00FF00) |
+				 (v << 24)             |
+				((v <<  8) & 0xFF0000) |
+				((v >>  8) & 0x00FF00) |
 				((v >> 24) & 0x0000FF);
 		}
 
 		constexpr uint64_t byte_swap(uint64_t v)
 		{
 			return
-				(v << 56) |
+				 (v << 56)                        |
 				((v << 40) & 0xFF000000000000ull) |
 				((v << 24) & 0x00FF0000000000ull) |
-				((v << 8) & 0x0000FF00000000ull) |
-				((v >> 8) & 0x000000FF000000ull) |
+				((v <<  8) & 0x0000FF00000000ull) |
+				((v >>  8) & 0x000000FF000000ull) |
 				((v >> 24) & 0x00000000FF0000ull) |
 				((v << 40) & 0x0000000000FF00ull) |
 				((v >> 56) & 0x000000000000FFull);
@@ -537,16 +545,21 @@ namespace sha2
 		typedef int64_t difference_type;
 		typedef value_type *pointer;
 		typedef value_type &reference;
-		constexpr explicit byte_swap_iterator_t(V const *i) : _i(i) {}
-		constexpr V operator*() const { return _detail::byte_swap(*_i); }
-		constexpr difference_type operator-(byte_swap_iterator_t const x) const 
+		
+        constexpr explicit byte_swap_iterator_t(V const *i) : _i(i) {}
+		
+        constexpr V operator*() const { return _detail::byte_swap(*_i); }
+		
+        constexpr difference_type operator-(byte_swap_iterator_t const x) const 
 		{
 			return _i - x._i;
 		}
+
 		constexpr bool operator!=(byte_swap_iterator_t const x) const
 		{
 			return _i != x._i;
 		}
+
 		byte_swap_iterator_t &operator++() 
 		{
 			++_i;
