@@ -66,7 +66,7 @@ namespace sha2
      */
     template<class T>
     ::std::array<uint32_t, 7> sha224(T const &input);
-    
+C    
     /**
      * T is BitSequenceConcept<64>
      */
@@ -99,7 +99,7 @@ namespace sha2
 namespace sha2
 {
     /**
-     * Implements BitSequence<sizeof(typename Iterator::value_type) * CHAR_BIT>.
+     * Implements BitSequenceConcept<sizeof(typename Iterator::value_type) * CHAR_BIT>.
      */
     template<class Iterator>
     class bit_sequence_t
