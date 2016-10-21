@@ -66,7 +66,7 @@ namespace sha2
      */
     template<class T>
     ::std::array<uint32_t, 7> sha224(T const &input);
-C    
+    
     /**
      * T is BitSequenceConcept<64>
      */
