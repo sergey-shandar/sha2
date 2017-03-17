@@ -39,3 +39,4 @@ packages/
 *.log
 *.db
 *.TMP
+**/.vs
