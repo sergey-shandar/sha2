@@ -25,10 +25,10 @@ namespace Microsoft {
             {
                 RETURN_WIDE_STRING(t);
             }
-			static std::wstring ToString(long long x)
-			{
-				RETURN_WIDE_STRING(x);
-			}
+            static std::wstring ToString(long long x)
+            {
+                RETURN_WIDE_STRING(x);
+            }
         }
     }
 }
