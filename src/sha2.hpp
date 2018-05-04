@@ -139,7 +139,7 @@ namespace sha2
 
             result_t result;
 
-            T w[p_t::size];
+            T w[16];
 
             state_t(result_t const &initial) : result(initial) {}
 
@@ -158,10 +158,12 @@ namespace sha2
                 // Compression function main loop :
                 for (auto i = 0; i < p_t::size; ++i)
                 {
+                    auto const j = i % 16;
+                    auto wi = w[j];
                     if (i >= 16)
                     {
-                        auto const w15 = w[i - 15];
-                        auto const w2 = w[i - 2];
+                        auto const w15 = w[(i + 1) % 16];
+                        auto const w2 = w[(i + 14) % 16];
 
                         auto const s0 =
                             right_rotate(w15, p_t::s00) ^
@@ -172,7 +174,9 @@ namespace sha2
                             right_rotate(w2, p_t::s11) ^
                             (w2 >> p_t::s12);
 
-                        w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+                        wi += s0 + w[(i + 9) % 16] + s1;
+
+                        w[j] = wi;
                     }
 
                     auto const s1 =
@@ -180,7 +184,7 @@ namespace sha2
                         right_rotate(e, p_t::e1) ^
                         right_rotate(e, p_t::e2);
                     auto const ch = (e & f) ^ ((~e) & g);
-                    auto const temp1 = h + s1 + ch + p_t::k[i] + w[i];
+                    auto const temp1 = h + s1 + ch + p_t::k[i] + wi;
 
                     auto const s0 =
                         right_rotate(a, p_t::a0) ^
