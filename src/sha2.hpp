@@ -145,25 +145,6 @@ namespace sha2
 
             void process()
             {
-                // Extend the first 16 words into the remaining 48/66 words w[16..63/79]
-                // of the message schedule array:
-                for (auto i = 16; i < p_t::size; ++i)
-                {
-                    auto const w15 = w[i - 15];
-                    auto const w2 = w[i - 2];
-
-                    auto const s0 =
-                        right_rotate(w15, p_t::s00) ^
-                        right_rotate(w15, p_t::s01) ^
-                        (w15 >> p_t::s02);
-                    auto const s1 =
-                        right_rotate(w2, p_t::s10) ^
-                        right_rotate(w2, p_t::s11) ^
-                        (w2 >> p_t::s12);
-
-                    w[i] = w[i - 16] + s0 + w[i - 7] + s1;
-                }
-
                 // Initialize working variables to current hash value :
                 T a = result[0];
                 T b = result[1];
@@ -177,6 +158,23 @@ namespace sha2
                 // Compression function main loop :
                 for (auto i = 0; i < p_t::size; ++i)
                 {
+                    if (i >= 16)
+                    {
+                        auto const w15 = w[i - 15];
+                        auto const w2 = w[i - 2];
+
+                        auto const s0 =
+                            right_rotate(w15, p_t::s00) ^
+                            right_rotate(w15, p_t::s01) ^
+                            (w15 >> p_t::s02);
+                        auto const s1 =
+                            right_rotate(w2, p_t::s10) ^
+                            right_rotate(w2, p_t::s11) ^
+                            (w2 >> p_t::s12);
+
+                        w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+                    }
+
                     auto const s1 =
                         right_rotate(e, p_t::e0) ^
                         right_rotate(e, p_t::e1) ^
