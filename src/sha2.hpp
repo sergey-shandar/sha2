@@ -60,13 +60,21 @@ namespace sha2
                 static const size_t v2 = 10;
             };
 
-            static const size_t a0 = 2;
-            static const size_t a1 = 13;
-            static const size_t a2 = 22;
+            class a
+            {
+            public:
+                static const size_t v0 = 2;
+                static const size_t v1 = 13;
+                static const size_t v2 = 22;
+            };
 
-            static const size_t e0 = 6;
-            static const size_t e1 = 11;
-            static const size_t e2 = 25;
+            class e
+            {
+            public:
+                static const size_t v0 = 6;
+                static const size_t v1 = 11;
+                static const size_t v2 = 25;
+            };
 
             typedef uint32_t const k_t[size];
 
@@ -110,13 +118,21 @@ namespace sha2
                 static const size_t v2 = 6;
             };
 
-            static const size_t a0 = 28;
-            static const size_t a1 = 34;
-            static const size_t a2 = 39;
+            class a
+            {
+            public:
+                static const size_t v0 = 28;
+                static const size_t v1 = 34;
+                static const size_t v2 = 39;
+            };
 
-            static const size_t e0 = 14;
-            static const size_t e1 = 18;
-            static const size_t e2 = 41;
+            class e
+            {
+            public:
+                static const size_t v0 = 14;
+                static const size_t v1 = 18;
+                static const size_t v2 = 41;
+            };
 
             typedef uint64_t const k_t[size];
 
@@ -130,6 +146,15 @@ namespace sha2
                 right_rotate(w, S::v0) ^
                 right_rotate(w, S::v1) ^
                 (w >> S::v2);
+        }
+
+        template<class S, class T>
+        constexpr T right_rotate3(T v)
+        {
+            return
+                right_rotate(v, S::v0) ^
+                right_rotate(v, S::v1) ^
+                right_rotate(v, S::v2);
         }
 
         template<class Dummy>
@@ -164,6 +189,10 @@ namespace sha2
 
             typedef typename p_t::s1 s1_t;
 
+            typedef typename p_t::a a_t;
+
+            typedef typename p_t::e e_t;
+
             typedef ::std::array<T, 8> result_t;
 
             result_t result;
@@ -189,28 +218,19 @@ namespace sha2
                     auto wi = w[j];
                     if (i >= 16)
                     {
-                        auto const w15 = w[(i + 1) % 16];
-                        auto const w2 = w[(i + 14) % 16];
-
-                        auto const s0 = extend_message<s0_t>(w15);
-                        auto const s1 = extend_message<s1_t>(w2);
+                        auto const s0 = extend_message<s0_t>(w[(i + 1) % 16]);
+                        auto const s1 = extend_message<s1_t>(w[(i + 14) % 16]);
 
                         wi += s0 + w[(i + 9) % 16] + s1;
 
                         w[j] = wi;
                     }
 
-                    auto const s1 =
-                        right_rotate(e, p_t::e0) ^
-                        right_rotate(e, p_t::e1) ^
-                        right_rotate(e, p_t::e2);
+                    auto const s1 = right_rotate3<e_t>(e);
                     auto const ch = (e & f) ^ ((~e) & g);
                     auto const temp1 = h + s1 + ch + p_t::k[i] + wi;
 
-                    auto const s0 =
-                        right_rotate(a, p_t::a0) ^
-                        right_rotate(a, p_t::a1) ^
-                        right_rotate(a, p_t::a2);
+                    auto const s0 = right_rotate3<a_t>(a);
                     auto const maj = (a & b) ^ (a & c) ^ (b & c);
                     auto const temp2 = s0 + maj;
 
