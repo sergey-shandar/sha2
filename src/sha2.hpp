@@ -44,13 +44,21 @@ namespace sha2
         public:
             static const size_t size = 64;
 
-            static const size_t s00 = 7;
-            static const size_t s01 = 18;
-            static const size_t s02 = 3;
+            class s0
+            {
+            public:
+                static const size_t v0 = 7;
+                static const size_t v1 = 18;
+                static const size_t v2 = 3;
+            };
 
-            static const size_t s10 = 17;
-            static const size_t s11 = 19;
-            static const size_t s12 = 10;
+            class s1
+            {
+            public:
+                static const size_t v0 = 17;
+                static const size_t v1 = 19;
+                static const size_t v2 = 10;
+            };
 
             static const size_t a0 = 2;
             static const size_t a1 = 13;
@@ -86,13 +94,21 @@ namespace sha2
         public:
             static const size_t size = 80;
 
-            static const size_t s00 = 1;
-            static const size_t s01 = 8;
-            static const size_t s02 = 7;
+            class s0
+            {
+            public:
+                static const size_t v0 = 1;
+                static const size_t v1 = 8;
+                static const size_t v2 = 7;
+            };
 
-            static const size_t s10 = 19;
-            static const size_t s11 = 61;
-            static const size_t s12 = 6;
+            class s1
+            {
+            public:
+                static const size_t v0 = 19;
+                static const size_t v1 = 61;
+                static const size_t v2 = 6;
+            };
 
             static const size_t a0 = 28;
             static const size_t a1 = 34;
@@ -106,6 +122,15 @@ namespace sha2
 
             static k_t k;
         };
+
+        template<class S, class T>
+        constexpr T extend_message(T w)
+        {
+            return 
+                right_rotate(w, S::v0) ^
+                right_rotate(w, S::v1) ^
+                (w >> S::v2);
+        }
 
         template<class Dummy>
         typename parameters_t<uint64_t, Dummy>::k_t parameters_t<uint64_t, Dummy>::k =
@@ -135,6 +160,10 @@ namespace sha2
 
             typedef parameters_t<T> p_t;
 
+            typedef typename p_t::s0 s0_t;
+
+            typedef typename p_t::s1 s1_t;
+
             typedef ::std::array<T, 8> result_t;
 
             result_t result;
@@ -163,14 +192,8 @@ namespace sha2
                         auto const w15 = w[(i + 1) % 16];
                         auto const w2 = w[(i + 14) % 16];
 
-                        auto const s0 =
-                            right_rotate(w15, p_t::s00) ^
-                            right_rotate(w15, p_t::s01) ^
-                            (w15 >> p_t::s02);
-                        auto const s1 =
-                            right_rotate(w2, p_t::s10) ^
-                            right_rotate(w2, p_t::s11) ^
-                            (w2 >> p_t::s12);
+                        auto const s0 = extend_message<s0_t>(w15);
+                        auto const s1 = extend_message<s1_t>(w2);
 
                         wi += s0 + w[(i + 9) % 16] + s1;
 
