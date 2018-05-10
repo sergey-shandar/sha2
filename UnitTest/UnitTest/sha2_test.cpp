@@ -13,17 +13,14 @@ namespace UnitTest
     {
     public:
         
-        /*
         // 32 GB 
         // old: ~ 5 min
         // new: ~ 4 min
         TEST_METHOD(Sha256Length)
         {
-            auto const x = sha2::sha256(nrange32<0, 0x800000000>());
+            auto const x = sha2::sha256(sha2::fill8<32, 0, 0x800000000ull * 8>());
         }
-        */
 
-        /*
         // 32 GB
         // new: ~ 3 min
         TEST_METHOD(Sha512Length)
@@ -37,7 +34,6 @@ namespace UnitTest
                     0x36cea299bfce6765,
                 });
         }
-        */
 
         TEST_METHOD(Sha224)
         {

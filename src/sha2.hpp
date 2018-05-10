@@ -139,11 +139,9 @@ namespace sha2
 
             result_t result;
 
-            T w[16];
-
             state_t(result_t const &initial) : result(initial) {}
 
-            void process()
+            void process(T (&w)[16])
             {
                 // Initialize working variables to current hash value :
                 T a = result[0];
@@ -234,18 +232,20 @@ namespace sha2
 
             T size_hi = 0;
             state_t<T> state(initial);
-            static const auto i_max =
+            static auto const i_max =
                 ::std::numeric_limits<T>::max() / uint_size + 1;
             T i = 0;
+
+            T w[16];
 
             for (auto const value : input)
             {
                 auto const index = i % 16;
-                state.w[index] = value;
+                w[index] = value;
                 i = (i + 1) % i_max;
                 if (index == 15)
                 {
-                    state.process();
+                    state.process(w);
                     if (i == 0)
                     {
                         ++size_hi;
@@ -258,7 +258,7 @@ namespace sha2
                 // size < unit_size always.
                 auto index = i % 16;
                 auto const size = input.remainder_size();
-                state.w[index] =
+                w[index] =
                     input.remainder() |
                     (static_cast<T>(1) << ((uint_size - 1) - size));
 
@@ -268,18 +268,18 @@ namespace sha2
                 {
                     for (; index < 16; ++index)
                     {
-                        state.w[index] = 0;
+                        w[index] = 0;
                     }
-                    state.process();
+                    state.process(w);
                     index = 0;
                 }
                 for (; index < 14; ++index)
                 {
-                    state.w[index] = 0;
+                    w[index] = 0;
                 }
-                state.w[14] = size_hi;
-                state.w[15] = i * uint_size + size;
-                state.process();
+                w[14] = size_hi;
+                w[15] = i * uint_size + size;
+                state.process(w);
             }
 
             return state.result;
